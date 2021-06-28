@@ -29,7 +29,7 @@ All the tools you need to build an app in 2 minutes.
   The name that will appear in the app.
 
   ##### id
-  The internally used id, these must be unique.
+  The internally used id, these must be unique. Can be either int or string.
 
   ##### type
   This is how the screen is accessed.

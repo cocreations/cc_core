@@ -1,8 +1,6 @@
-import 'package:cc_core/config/appConfig.dart';
 import 'package:cc_core/models/core/ccApp.dart';
-import 'package:flutter/material.dart';
 import 'package:cc_core/screens/listScreens/ListViewScreen.dart';
-import 'package:cc_core/screens/listScreens/TiledListScreen.dart';
+import 'package:flutter/material.dart';
 import 'package:cc_core/screens/emptyTestScreen/emptyImageScreen.dart';
 import 'package:cc_core/screens/emptyTestScreen/emptyTestScreen.dart';
 import 'package:cc_core/screens/mapScreen/mapScreen.dart';
@@ -24,13 +22,10 @@ class WidgetParser extends StatelessWidget {
         return TextScreen(string: arg);
       case "MapScreen":
         return MapScreen(mbTilesUrl: arg);
-      // case "TiledListScreen":
-      //   return TiledListScreen(arg);
-      // case "ListViewScreen":
-      //   return ListViewScreen(arg);
+      case "ListViewScreen":
+        return ListViewScreen(arg);
       case "SettingsScreen":
         return SettingsScreen();
-      // from here down is Soundtrail widgets
       default:
         if (CcApp.of(context).parserModules != null) {
           var returnWidget = CcApp.of(context).parserModules.parse(widget, arg);

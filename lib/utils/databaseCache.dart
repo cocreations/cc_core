@@ -15,6 +15,11 @@ import 'package:cc_core/config/appConfig.dart';
 // add an isReady property which will get set to true when init() finishes
 // if a method like saveDataToCache() is called when isReady is false, call init and await its result
 
+// TODO: Add expiry to cache
+// get the current dateTime in utc
+// add that time in (milliseconds / 1000).floor() whenever data is cached
+// return that time as a dateTime object in {"cachedAt":dateTime}
+
 /// ## DBCache
 /// creates an instance of a database with [dbName] being the name of the database file
 class DBCache {
@@ -35,6 +40,7 @@ class DBCache {
   // finds and opens the database
   Future<Database> _openDBCache(String dbName) async {
     Directory directory;
+
     if (testingDir == null) {
       directory = await getApplicationDocumentsDirectory();
     } else {
@@ -166,6 +172,8 @@ class DBCache {
 
         // this actually where we check if the array contains the correct value
         if (filters.any((element) => element.op == Op.arrayContains)) {
+          List<int> toBeRemoved = [];
+
           if (returnData != null && returnData.isNotEmpty) {
             for (var i = 0; i < returnData.length; i++) {
               var json = jsonDecode(returnData[i]["dataJson"]);
@@ -174,15 +182,20 @@ class DBCache {
                 if (element.op == Op.arrayContains) {
                   if (json[element.field] is List) {
                     if (!json[element.field].contains(element.value)) {
-                      returnData.removeAt(i);
+                      toBeRemoved.add(i);
                     }
                   } else {
                     // if the field is not an array, reject it
-                    returnData.removeAt(i);
+                    toBeRemoved.add(i);
                   }
                 }
               });
             }
+          }
+          toBeRemoved.sort();
+
+          for (var i = toBeRemoved.length - 1; 0 <= i; i--) {
+            returnData.removeAt(toBeRemoved[i]);
           }
         }
 

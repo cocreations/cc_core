@@ -62,8 +62,8 @@ class ConfigData {
   /// ``` dart
   /// {
   /// "backendType": "airTable",
-  /// "baseId": "my-amazing-app",
-  /// "apiKey": "totallyarealapikey"
+  /// "baseId": "appMYAWESOMEAPP",
+  /// "apiKey": "keyTOTALLYAREALKEY"
   /// }
   /// ```
   ///
