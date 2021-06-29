@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
+
+import 'package:latlong2/latlong.dart';
 import 'package:cc_core/components/loading.dart';
-import 'package:cc_core/screens/mapScreen/locationDot.dart';
 
 import 'package:cc_core/models/core/ccApp.dart';
 import 'package:cc_core/models/core/ccData.dart';
@@ -74,7 +74,7 @@ class _MapScreenState extends State<MapScreen> {
           mapFile = val;
           gotFile = true;
           tileLayerOptions = TileLayerOptions(
-            tileProvider: MBTilesImageProvider.fromFile(mapFile),
+            // tileProvider: MBTilesImageProvider.fromFile(mapFile),
             keepBuffer: 6,
             tms: true,
           );

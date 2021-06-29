@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show File;
 
+import 'package:cc_core/screens/listScreens/listItemStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:cc_core/models/core/ccApp.dart';
 import 'package:cc_core/models/core/ccData.dart';
@@ -23,6 +24,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
 
   List<Widget> listItems = [];
   List<String> imageUrls = [];
+  List<ListItemStyle> listItemStyle = [];
 
   void _openPage(NavigatorState navigator, Widget widget, String title) {
     navigator.push(
@@ -47,52 +49,94 @@ class _ListViewScreenState extends State<ListViewScreen> {
     );
   }
 
+  Widget tileContent(
+    String name,
+    String appScreen,
+    String appScreenParam,
+    File image,
+    ListItemStyle style,
+    bool showAppScreenOnCard,
+  ) {
+    if (showAppScreenOnCard) {
+      return WidgetParser(appScreen, appScreenParam);
+    }
+    List<Widget> stack = [];
+    stack.add(Row(
+      children: <Widget>[
+        image != null
+            ? Image.file(
+                image,
+                fit: BoxFit.fitHeight,
+                height: style.imageSize,
+                width: style.imageSize,
+              )
+            : Container(
+                height: style.imageSize,
+                width: style.imageSize,
+              ),
+        Container(
+          margin: EdgeInsets.only(left: 20),
+          child: Text(
+            name != null ? name : "",
+            style: TextStyle(
+              fontFamily: "Roboto",
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ],
+    ));
+    if (appScreen != null) {
+      stack.add(Material(
+        color: Colors.transparent,
+        child: InkWell(
+          hoverColor: Colors.black12.withOpacity(0.5),
+          focusColor: CcApp.of(context).styler.primaryColor.withOpacity(0.2),
+          splashColor: CcApp.of(context).styler.primaryColor.withOpacity(0.2),
+          highlightColor: Colors.black12,
+          borderRadius: BorderRadius.all(Radius.circular(style.cornerRadius)),
+          key: Key(name),
+          onTap: () {
+            _openPage(
+              Navigator.of(context),
+              WidgetParser(
+                appScreen,
+                appScreenParam,
+              ),
+              name,
+            );
+          },
+        ),
+      ));
+    }
+    return Stack(children: stack);
+  }
+
   Widget newTile(
     String name,
     String appScreen,
     String appScreenParam,
     File image,
+    ListItemStyle style,
+    bool showAppScreenOnCard,
   ) {
-    return Container(
-      width: 300,
-      height: 70,
-      color: Colors.grey[100],
-      margin: EdgeInsets.all(3),
-      child: InkWell(
-        key: Key(name),
-        onTap: () {
-          _openPage(
-            Navigator.of(context),
-            WidgetParser(
-              appScreen,
-              appScreenParam,
-            ),
-            name,
-          );
-        },
-        child: Row(
-          children: <Widget>[
-            image != null
-                ? Image.file(
-                    image,
-                    fit: BoxFit.fitHeight,
-                    height: 70,
-                    width: 70,
-                  )
-                : Container(height: 70, width: 70),
-            Container(
-              margin: EdgeInsets.only(left: 20),
-              child: Text(
-                name != null ? name : "",
-                style: TextStyle(
-                  fontFamily: "Roboto",
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ],
+    return Card(
+      elevation: style.elevation,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(
+            style.cornerRadius,
+          ),
         ),
+      ),
+      margin: EdgeInsets.all(3),
+      child: Container(
+        width: 300,
+        color: Colors.grey[100],
+        height: style.imageSize,
+        child: tileContent(name, appScreen, appScreenParam, image, style, showAppScreenOnCard),
       ),
     );
   }
@@ -105,9 +149,18 @@ class _ListViewScreenState extends State<ListViewScreen> {
     List returnValues = [];
     for (var val in vals) {
       val = jsonDecode(val["dataJson"]);
+
+      // making this a bool based on the two options
+      val["displayAppScreen"] = val["displayAppScreen"] == "asCardContent";
+
       returnValues.add(val); // so I don't have to loop through the array twice
       // get the image file for later ues
-      if (val["tileImageUrl"] != null && val["tileImageUrl"] != "") {
+
+      listItemStyle.add(ListItemStyle.parseStyle(val["style"]));
+
+      // if val["displayAppScreen"] is true, it means we don't need to see the image, so just get the 404 image
+      // efficacy needs to be improved here
+      if ((val["tileImageUrl"] != null && val["tileImageUrl"] != "") || val["displayAppScreen"]) {
         imageUrls.add(val["tileImageUrl"]);
       } else {
         imageUrls.add("https://i.redd.it/sequence_lhtq7kjhlpp21.png");
@@ -127,7 +180,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
           CcData(CcApp.of(context).database).getFiles(imageUrls, widget.tableName, context).then((images) {
             listItems = [];
             for (var i = 0; i < vals.length; i++) {
-              listItems.add(newTile(vals[i]["name"], vals[i]["appScreen"], vals[i]["appScreenParam"], images[i]));
+              listItems.add(newTile(vals[i]["name"], vals[i]["appScreen"], vals[i]["appScreenParam"], images[i], listItemStyle[i], vals[i]["displayAppScreen"]));
             }
             if (mounted) {
               setState(() {

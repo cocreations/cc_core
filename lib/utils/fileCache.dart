@@ -27,7 +27,7 @@ class FileCache {
     http.Response response;
 
     try {
-      response = await http.get(url);
+      response = await http.get(Uri.parse(url));
     } catch (e, stacktrace) {
       print("failed to get file: $e\nStacktrace: $stacktrace");
     }
@@ -106,7 +106,7 @@ class FileCache {
       http.Response val;
 
       try {
-        val = await http.get(urls[i]);
+        val = await http.get(Uri.parse(urls[i]));
       } catch (e) {
         if (onFileError != null) {
           onFileError(Error(3020, "$e"));

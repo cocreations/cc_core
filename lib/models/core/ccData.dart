@@ -278,7 +278,7 @@ class CcData {
 
           try {
             // this should be damn near instant so don't worry about waiting for this
-            lastMod = (await http.head(url)).headers["last-modified"];
+            lastMod = (await http.head(Uri.parse(url))).headers["last-modified"];
           } catch (e) {
             print(e);
           }
@@ -449,7 +449,7 @@ class CcData {
 
           try {
             urlsDownloaded.forEach((url) {
-              futureResponses.add(http.head(url).catchError((e) {
+              futureResponses.add(http.head(Uri.parse(url)).catchError((e) {
                 print("Future error handling is the worst! $e");
               }));
             });

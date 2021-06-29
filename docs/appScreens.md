@@ -58,6 +58,7 @@ The table should have six columns:
 * appScreen
 * appScreenParam
 * style
+* displayContentAs
 
 ##### id
 The internally used id, these must be unique. Can be either int or string
@@ -70,18 +71,30 @@ A image url.
 
 ##### appScreen
 This is the actual screen you want the app to open.
-All available pre-installed screens can be seen in appScreens.md.
 
 ##### appScreenParam
 This is all the info passed to the screen.
 This may be a url for an image on an image screen or a table name for a menu screen.
 
-
-todo: add style info
 ##### style
 The style data to add to the list items.
-ideas:
-simple key-value pair system that uses commas to separate the values and colons to separate the keys and values. It's relatively simple and pretty human readable
 
-like this:
-`imageSize:120,elevation:10,cornerRadius:25`
+A key-value pair system that uses commas to separate the values and colons to separate the keys and values.
+
+Example:
+`"imageSize:120,elevation:1.5,cornerRadius:25"`
+
+These are the options you have:
+
+* imageSize : int or double. The square size of the image in logical pixels. Default is 70.
+* elevation : int or double. The elevation of the card. Default is 1.
+* cornerRadius : int or double. The radius of the corners of the card. Default is 4.
+* cardColor : int colour value. "0xFF0000FF" would be 100% opacity blue for instance. The colour of the cards background.
+
+
+##### displayAppScreen
+This is whether to show the the appScreen as a whole page once the card is tapped, or to show it on the card it self overriding the tileImageUrl and name.
+The values are:
+
+* onCardTap (default)
+* asCardContent

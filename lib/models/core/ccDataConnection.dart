@@ -45,7 +45,7 @@ class AirTableDataConnection extends CcDataConnection {
 
   Future<dynamic> loadData(String table) async {
     //does a get request with all the auth data and stuff to airtable
-    http.Response response = await http.get("https://api.airtable.com/v0/$baseId/$table?maxRecords=500&view=Grid%20view", headers: {"Authorization": "Bearer $apiKey"});
+    http.Response response = await http.get(Uri.parse("https://api.airtable.com/v0/$baseId/$table?maxRecords=500&view=Grid%20view"), headers: {"Authorization": "Bearer $apiKey"});
 
     if (response.statusCode == 200) {
       return standardizedAirtableData(response.body);
@@ -106,7 +106,7 @@ class FirebaseDataConnection extends CcDataConnection {
   Future<dynamic> loadData(String table) async {
     // need to fix this later when we have more people
     http.Response response = await http.post(
-      "https://firestore.googleapis.com/v1/projects/$baseId/databases/(default)/documents:runQuery",
+      Uri.parse("https://firestore.googleapis.com/v1/projects/$baseId/databases/(default)/documents:runQuery"),
       headers: {"Content-Type": "application/json"},
       body: "{\"structuredQuery\":{\"from\":[{\"collectionId\":\"$table\"}]}}",
       //"{\"structuredQuery\":{\"from\":[{\"collectionId\":\"$table\"}],\"where\":{\"fieldFilter\":{\"field\":{\"fieldPath\":\"editor\"},\"op\":\"EQUAL\",\"value\":{\"stringValue\":\"33bXNjmpYMhDHS4qYcaZjMMK7hm1\"}}}}}",
@@ -140,7 +140,7 @@ class FirebaseDataConnection extends CcDataConnection {
     });
 
     http.Response response = await http.post(
-      "https://firestore.googleapis.com/v1/projects/$baseId/databases/(default)/documents:runQuery",
+      Uri.parse("https://firestore.googleapis.com/v1/projects/$baseId/databases/(default)/documents:runQuery"),
       headers: {"Content-Type": "application/json"},
       body: "{\"structuredQuery\":{\"from\":[{\"collectionId\":\"$table\"}],\"where\":{\"compositeFilter\":{\"op\":\"AND\", \"filters\":[${jsonFirebaseFilters.join(",")}]}}}}",
     );

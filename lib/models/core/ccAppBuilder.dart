@@ -53,27 +53,27 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
       return CcStyler.buildWithUrls(
         database,
         context,
-        fallbackAppBanner: widget.appConfig.appName != null ? widget.appConfig.appName : null,
+        fallbackAppBanner: widget.appConfig.appName != null ? widget.appConfig.appName : "App",
         appBarBanner: styleData.containsKey("appBarBanner") ? styleData["appBarBanner"] : null,
-        appBarBackground: styleData.containsKey("appBarBackground") ? Color(int.parse(styleData["appBarBackground"])) : null,
-        backgroundColor: styleData.containsKey("backgroundColor") ? Color(int.parse(styleData["backgroundColor"])) : null,
-        appBarButtonColor: styleData.containsKey("appBarButtonColor") ? Color(int.parse(styleData["appBarButtonColor"])) : null,
-        primaryColor: styleData.containsKey("primaryColor") ? Color(int.parse(styleData["primaryColor"])) : null,
-        accentColor: styleData.containsKey("accentColor") ? Color(int.parse(styleData["accentColor"])) : null,
-        sideDrawerType: styleData.containsKey("sideDrawerType") ? _parseDrawerType(styleData["sideDrawerType"]) : null,
+        appBarBackground: styleData.containsKey("appBarBackground") ? Color(int.parse(styleData["appBarBackground"])) : Colors.blue,
+        backgroundColor: styleData.containsKey("backgroundColor") ? Color(int.parse(styleData["backgroundColor"])) : Colors.white,
+        appBarButtonColor: styleData.containsKey("appBarButtonColor") ? Color(int.parse(styleData["appBarButtonColor"])) : Colors.white,
+        primaryColor: styleData.containsKey("primaryColor") ? Color(int.parse(styleData["primaryColor"])) : Colors.blue,
+        accentColor: styleData.containsKey("accentColor") ? Color(int.parse(styleData["accentColor"])) : Colors.blueAccent,
+        sideDrawerType: styleData.containsKey("sideDrawerType") ? _parseDrawerType(styleData["sideDrawerType"]) : DrawerType.standard,
       );
     } else {
       return CcStyler.buildWithAssets(
         database,
         context,
-        fallbackAppBanner: widget.appConfig.appName != null ? widget.appConfig.appName : null,
+        fallbackAppBanner: widget.appConfig.appName != null ? widget.appConfig.appName : "App",
         appBarBanner: styleData.containsKey("appBarBanner") ? styleData["appBarBanner"] : null,
-        appBarBackground: styleData.containsKey("appBarBackground") ? Color(int.parse(styleData["appBarBackground"])) : null,
-        backgroundColor: styleData.containsKey("backgroundColor") ? Color(int.parse(styleData["backgroundColor"])) : null,
-        appBarButtonColor: styleData.containsKey("appBarButtonColor") ? Color(int.parse(styleData["appBarButtonColor"])) : null,
-        primaryColor: styleData.containsKey("primaryColor") ? Color(int.parse(styleData["primaryColor"])) : null,
-        accentColor: styleData.containsKey("accentColor") ? Color(int.parse(styleData["accentColor"])) : null,
-        sideDrawerType: styleData.containsKey("sideDrawerType") ? _parseDrawerType(styleData["sideDrawerType"]) : null,
+        appBarBackground: styleData.containsKey("appBarBackground") ? Color(int.parse(styleData["appBarBackground"])) : Colors.blue,
+        backgroundColor: styleData.containsKey("backgroundColor") ? Color(int.parse(styleData["backgroundColor"])) : Colors.white,
+        appBarButtonColor: styleData.containsKey("appBarButtonColor") ? Color(int.parse(styleData["appBarButtonColor"])) : Colors.white,
+        primaryColor: styleData.containsKey("primaryColor") ? Color(int.parse(styleData["primaryColor"])) : Colors.blue,
+        accentColor: styleData.containsKey("accentColor") ? Color(int.parse(styleData["accentColor"])) : Colors.blueAccent,
+        sideDrawerType: styleData.containsKey("sideDrawerType") ? _parseDrawerType(styleData["sideDrawerType"]) : DrawerType.standard,
       );
     }
   }

@@ -62,7 +62,7 @@ All the tools you need to build an app in 2 minutes.
   * id
 
   ##### name
-  You've only got seven options here.
+  You've only got eight options here.
   1. appBarBackground : String int colour value. "0xFF00FF00" would be 100% opacity green for instance.
   This will set the background colour of the app bar.
   Defaults to blue.
@@ -92,3 +92,6 @@ All the tools you need to build an app in 2 minutes.
   * compendiumStyle : doesn't extend fully to the top and bottom, has rounded corners.
   * standard : normal side menu.
   Defaults to standard.
+
+  8. defaultListViewStyle : Comma separated key-value pair that define the default style property of a listview item.
+  More info about the properties them selves can be found in appScreens.md under ListViewScreen > style.

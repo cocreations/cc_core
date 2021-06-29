@@ -36,7 +36,7 @@ class AudioItem {
   bool _loop = false;
 
   StreamSubscription<Duration> _playerSeekSubscription;
-  StreamSubscription<AudioPlayerState> _playerStateSubscription;
+  StreamSubscription<PlayerState> _playerStateSubscription;
 
   bool _seekStreamHasListeners = false;
   bool _stateStreamHasListeners = false;
@@ -152,7 +152,7 @@ class AudioItem {
     if (_state == AudioState.noAudio) return;
     _state = AudioState.playing;
 
-    if (_audioPlayer != null && _audioPlayer.state == AudioPlayerState.PAUSED) {
+    if (_audioPlayer != null && _audioPlayer.state == PlayerState.PAUSED) {
       _audioPlayer.resume();
     } else {
       audioPlayer.play(audioFile.path, isLocal: true, position: _seek);
@@ -213,19 +213,19 @@ class AudioItem {
 
     _playerStateSubscription = _audioPlayer.onPlayerStateChanged.listen((event) {
       switch (event) {
-        case AudioPlayerState.PAUSED:
+        case PlayerState.PAUSED:
           _state = AudioState.paused;
           break;
 
-        case AudioPlayerState.PLAYING:
+        case PlayerState.PLAYING:
           _state = AudioState.playing;
           break;
 
-        case AudioPlayerState.STOPPED:
+        case PlayerState.STOPPED:
           _state = AudioState.paused;
           break;
 
-        case AudioPlayerState.COMPLETED:
+        case PlayerState.COMPLETED:
           _state = AudioState.finished;
           break;
       }
