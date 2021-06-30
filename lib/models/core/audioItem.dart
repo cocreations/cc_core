@@ -132,6 +132,9 @@ class AudioItem {
   /// Plays the audio at the seek position
   void play() {
     if (_state == AudioState.noAudio) return;
+
+    if (_state == AudioState.finished) _seek = Duration.zero;
+
     _state = AudioState.playing;
     audioPlayer.play(audioFile.path, isLocal: true, position: _seek);
     if (_loop) {

@@ -15,6 +15,8 @@ class AudioWidget extends StatefulWidget {
     this.name = "",
     this.fileDir = "sounds",
     this.enableSeek = true,
+    this.onlyButton = false,
+    this.playButtonSize = 24.0,
     this.heroTag,
     this.onPlay,
   });
@@ -28,6 +30,8 @@ class AudioWidget extends StatefulWidget {
   final String name;
   final String fileDir;
   final bool enableSeek;
+  final bool onlyButton;
+  final double playButtonSize;
   final String heroTag;
 
   /// onPlay is called when the audio item is played
@@ -125,7 +129,7 @@ class _AudioWidgetState extends State<AudioWidget> {
                 IconButton(
                   icon: Icon(
                     Icons.play_arrow,
-                    color: Colors.orange,
+                    color: CcApp.of(context).styler.primaryColor,
                   ),
                   onPressed: () => launch(url),
                 ),
@@ -139,6 +143,8 @@ class _AudioWidgetState extends State<AudioWidget> {
 
   String _durationText() {
     String text = "";
+
+    if (_audioItem == null) return "0:00 / 0:00";
 
     if (_audioItem.seek.inSeconds - (_audioItem.seek.inMinutes * 60) < 10) {
       text = "${_audioItem.seek.inMinutes}:0${_audioItem.seek.inSeconds - (_audioItem.seek.inMinutes * 60)} / ";
@@ -168,14 +174,17 @@ class _AudioWidgetState extends State<AudioWidget> {
   }
 
   Widget _playPause() {
+    if (_audioItem == null) return Container();
+
     if (_audioItem.state == AudioState.noAudio) return Container();
 
     if (_audioItem.state != AudioState.playing) {
       return IconButton(
         tooltip: "Play",
+        iconSize: widget.playButtonSize,
         icon: Icon(
           Icons.play_arrow,
-          color: Colors.orange,
+          color: CcApp.of(context).styler.primaryColor,
         ),
         onPressed: () {
           if (widget.onPlay != null) {
@@ -192,9 +201,10 @@ class _AudioWidgetState extends State<AudioWidget> {
     } else {
       return IconButton(
         tooltip: "Pause",
+        iconSize: widget.playButtonSize,
         icon: Icon(
           Icons.pause,
-          color: Colors.orange,
+          color: CcApp.of(context).styler.primaryColor,
         ),
         onPressed: () {
           _audioItem.pause();
@@ -212,7 +222,7 @@ class _AudioWidgetState extends State<AudioWidget> {
     if (widget.imageFile != null) {
       image = Image.file(widget.imageFile, fit: BoxFit.contain);
     } else {
-      return Container(height: 60, width: 60, color: Colors.black);
+      return Container(height: 60, width: 60, color: Colors.transparent);
     }
 
     if (widget.heroTag != null) {
@@ -232,6 +242,7 @@ class _AudioWidgetState extends State<AudioWidget> {
   }
 
   Widget _seekBar() {
+    if (_audioItem == null) return Container();
     if (_audioItem.state == AudioState.noAudio) return Container();
     if (widget.enableSeek) {
       return Container(
@@ -239,7 +250,7 @@ class _AudioWidgetState extends State<AudioWidget> {
         margin: EdgeInsets.only(bottom: 10),
         child: Slider(
           value: _progressBarValue(),
-          activeColor: Colors.orangeAccent,
+          activeColor: CcApp.of(context).styler.primaryColor,
           inactiveColor: Colors.black12,
           onChangeStart: (value) {
             isSliderSliding = true;
@@ -265,7 +276,7 @@ class _AudioWidgetState extends State<AudioWidget> {
       height: 6,
       child: LinearProgressIndicator(
         value: _progressBarValue(),
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.orangeAccent),
+        valueColor: AlwaysStoppedAnimation<Color>(CcApp.of(context).styler.primaryColor),
         backgroundColor: Colors.black12,
       ),
     );
@@ -273,8 +284,22 @@ class _AudioWidgetState extends State<AudioWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (_audioItem == null) {
+      return Center(
+        child: Container(
+          width: 25,
+          height: 25,
+          child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(CcApp.of(context).styler.primaryColor)),
+        ),
+      );
+    }
+
+    if (widget.onlyButton) {
+      return _audioItem.state != AudioState.noAudio ? _playPause() : Container();
+    }
+
     return Container(
-      color: Colors.black,
+      // color: Colors.black,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -301,7 +326,7 @@ class _AudioWidgetState extends State<AudioWidget> {
                       ),
                       Text(
                         _durationText(),
-                        style: TextStyle(color: Colors.orange),
+                        style: TextStyle(color: CcApp.of(context).styler.primaryColor),
                       )
                     ],
                   ),

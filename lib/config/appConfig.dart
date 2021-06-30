@@ -8,6 +8,7 @@ class ConfigData {
     this.appName,
     this.appData,
     this.parserModules,
+    this.cacheRefresh = 1440,
   });
 
   /// Data source effectively the location of all the data the app will use to populate itself.
@@ -70,7 +71,7 @@ class ConfigData {
   final Map<String, String> dataSource;
 
   /// Config source effectively the location of the layout and style data.
-  /// 
+  ///
   /// This is where the app looks for the `menu` and `style` tables.
   ///
   /// Config source is the same as data source as it takes a map with either 2 or 3 values, depending on what backend type you want to use.
@@ -137,4 +138,11 @@ class ConfigData {
 
   /// These allow you to add your own widgets and screens into the json widget parser.
   final ParserModules parserModules;
+
+  /// How often the cache should refresh its data in minutes. 
+  /// Defaults to 1440 which is one day.
+  /// 
+  /// The cache will still be used after the set time has passed if the app can't get an internet connection.
+  /// But it will prioritize getting fresh data if it can.
+  final int cacheRefresh;
 }

@@ -98,3 +98,29 @@ The values are:
 
 * onCardTap (default)
 * asCardContent
+
+
+### Audio Players
+
+There are three types of audio players, but they all follow the same rules.
+
+1. `LargeAudioPlayer` LargeAudioPlayer gives a full size music app style audio player.
+2. `SmallAudioPlayer` SmallAudioPlayer gives you a mini audio player that's fit for cards in a ListViewScreen
+3. `SingleButtonAudioPlayer` SingleButtonAudioPlayer gives you only the play / pause button and no other controls. This is good for things like pronunciation in a language app.
+
+All of these have three positional parameters. The first in required but the other two are optional.
+
+1. Audio url.
+2. Name. This will also parse html, so you can add colours and rich text.
+3. Image url. 
+
+Example as a home screen:
+``` dart
+{
+"id":"1",
+"name":"Cat sounds", 
+"type":"homeScreen", 
+"appScreen":"LargeAudioPlayer",
+"appScreenParam":"https://www.catSounds.com/happy-cat.mp3,<b>Happy Cat</b>,https://www.catPhotos.com/happy-cat.jpg"
+}
+```

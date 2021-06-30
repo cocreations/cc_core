@@ -133,7 +133,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
       ),
       margin: EdgeInsets.all(3),
       child: Container(
-        width: 300,
+        width: MediaQuery.of(context).size.width * 0.85,
         color: Colors.grey[100],
         height: style.imageSize,
         child: tileContent(name, appScreen, appScreenParam, image, style, showAppScreenOnCard),
@@ -142,7 +142,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
   }
 
   Future<List> getData() async {
-    CcData data = CcData(CcApp.of(context).database);
+    CcData data = CcData(CcApp.of(context).database, expireAfter: CcApp.of(context).cacheRefresh);
     // grab the data from the new table
     Map dbData = await data.getDBData(widget.tableName, CcApp.of(context).dataSource);
     List vals = List.from(dbData.values);
@@ -160,7 +160,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
 
       // if val["displayAppScreen"] is true, it means we don't need to see the image, so just get the 404 image
       // efficacy needs to be improved here
-      if ((val["tileImageUrl"] != null && val["tileImageUrl"] != "") || val["displayAppScreen"]) {
+      if ((val["tileImageUrl"] != null && val["tileImageUrl"] != "") || !val["displayAppScreen"]) {
         imageUrls.add(val["tileImageUrl"]);
       } else {
         imageUrls.add("https://i.redd.it/sequence_lhtq7kjhlpp21.png");

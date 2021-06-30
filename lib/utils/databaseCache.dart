@@ -60,7 +60,8 @@ class DBCache {
           db.execute(
             "CREATE TABLE IF NOT EXISTS $table ("
             "dataId TEXT PRIMARY KEY,"
-            "dataJson TEXT"
+            "dataJson TEXT,"
+            "lastUpdated INTEGER"
             ");",
           );
         });
@@ -95,7 +96,7 @@ class DBCache {
           Batch batch = db.batch();
 
           data.forEach((k, v) {
-            batch.rawInsert("INSERT OR REPLACE INTO $dataTable(dataId, dataJson) VALUES (?,?)", [k.toString(), v.toString()]);
+            batch.rawInsert("INSERT OR REPLACE INTO $dataTable(dataId, dataJson, lastUpdated) VALUES (?,?,?)", [k.toString(), v.toString(), (DateTime.now().toUtc().millisecondsSinceEpoch / 1000).floor()]);
           });
 
           batch.commit(noResult: true);
@@ -239,7 +240,7 @@ class DBCache {
     return _checkTable(dataTable).then((succeeded) async {
       if (succeeded) {
         int result = await database.then((db) async {
-          return db.rawInsert("INSERT OR REPLACE INTO $dataTable (dataId, dataJson) VALUES (?,?)", [dataId.toString(), dataJson.toString()]);
+          return db.rawInsert("INSERT OR REPLACE INTO $dataTable(dataId, dataJson, lastUpdated) VALUES (?,?,?)", [dataId.toString(), dataJson.toString(), (DateTime.now().toUtc().millisecondsSinceEpoch / 1000).floor()]);
         });
         return result;
       } else {

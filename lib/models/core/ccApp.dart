@@ -29,6 +29,8 @@ class CcApp extends InheritedWidget {
   final CcStyler styler;
   final CustomAppData appData;
   final ParserModules parserModules;
+  /// In seconds
+  final int cacheRefresh;
 
   CcApp({
     Key key,
@@ -42,6 +44,7 @@ class CcApp extends InheritedWidget {
     this.homeScreen,
     this.appData,
     this.parserModules,
+    this.cacheRefresh = 86400,
   })  : assert(appId != null),
         assert(dataSource != null),
         assert(database != null),

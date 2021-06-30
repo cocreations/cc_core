@@ -24,6 +24,11 @@ class CcStyler {
   final Color accentColor;
   final DrawerType sideDrawerType;
 
+  @override
+  String toString() {
+    return "{appBarBackground:$appBarBackground, backgroundColor:$backgroundColor, appBarButtonColor:$appBarButtonColor, primaryColor:$primaryColor, accentColor:$accentColor, sideDrawerType:$sideDrawerType}";
+  }
+
   /// A static method that takes image assets and turns them into a CcStyler
   static CcStyler buildWithAssets(
     DBCache database,

@@ -1,5 +1,6 @@
 import 'package:cc_core/models/core/ccApp.dart';
 import 'package:cc_core/screens/listScreens/ListViewScreen.dart';
+import 'package:cc_core/screens/simpleScreens/audioPlayerScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cc_core/screens/emptyTestScreen/emptyImageScreen.dart';
 import 'package:cc_core/screens/emptyTestScreen/emptyTestScreen.dart';
@@ -26,6 +27,12 @@ class WidgetParser extends StatelessWidget {
         return ListViewScreen(arg);
       case "SettingsScreen":
         return SettingsScreen();
+      case "LargeAudioPlayer":
+        return AudioPlayerScreen(arg, PlayerType.large);
+      case "SmallAudioPlayer":
+        return AudioPlayerScreen(arg, PlayerType.small);
+      case "SingleButtonAudioPlayer":
+        return AudioPlayerScreen(arg, PlayerType.buttonOnly);
       default:
         if (CcApp.of(context).parserModules != null) {
           var returnWidget = CcApp.of(context).parserModules.parse(widget, arg);
@@ -36,7 +43,7 @@ class WidgetParser extends StatelessWidget {
 
         return Container(
           child: Center(
-            child: Text("Failed to parse '$widget'"),
+            child: Text("Failed to parse '$widget'\nEnsure parserModules have been set correctly and double check the spelling of the screen.\n(Names are case sensitive)"),
           ),
         );
     }

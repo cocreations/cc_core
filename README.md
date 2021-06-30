@@ -95,3 +95,9 @@ All the tools you need to build an app in 2 minutes.
 
   8. defaultListViewStyle : Comma separated key-value pair that define the default style property of a listview item.
   More info about the properties them selves can be found in appScreens.md under ListViewScreen > style.
+
+  ##### value
+  See above.
+
+  ##### id
+  Must be unique.

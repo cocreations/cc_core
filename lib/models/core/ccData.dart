@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io' show File, SocketException, InternetAddress, Directory;
 import 'dart:async';
 
+import 'package:cc_core/models/core/ccApp.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
@@ -60,7 +61,10 @@ const MONTHS = {
 /// This class handles all data related things throughout the app/s
 class CcData {
   final DBCache database;
-  CcData(this.database);
+
+  /// in seconds
+  final int expireAfter;
+  CcData(this.database, {this.expireAfter = 86400});
 
   /// Returns the file extension of the url with the leading dot
   ///
@@ -167,10 +171,30 @@ class CcData {
       throw (e);
     }
 
+    // if we have cache
     if (cachedData != null && cachedData.isNotEmpty) {
-      return cachedData.asMap();
+      double oldestElement = double.maxFinite;
+      // get the lowest "lastUpdated" number, meaning the oldest cache
+      cachedData.forEach((element) {
+        if (element["lastUpdated"] != null && oldestElement > element["lastUpdated"]) oldestElement = element["lastUpdated"].toDouble();
+      });
+      DateTime lastTime = DateTime.fromMillisecondsSinceEpoch((oldestElement * 1000).floor(), isUtc: true);
 
-      // if we don't have a cache but we do have an internet connection get data from there
+      // if the oldest cache plus the expireAfter is older than the current time
+      // then refresh the cache if we can
+      if (lastTime.add(Duration(seconds: expireAfter)).isBefore(DateTime.now().toUtc())) {
+        if (isConnected || !dataConnection.requiresInternet) {
+          data = await dataConnection.loadData(table);
+
+          database.batchSave(table, readyData());
+
+          return data;
+        } else {
+          return cachedData.asMap();
+        }
+      } else {
+        return cachedData.asMap();
+      }
     } else if (isConnected || !dataConnection.requiresInternet) {
       data = await dataConnection.loadData(table);
 
@@ -211,19 +235,36 @@ class CcData {
       print(e);
     }
 
+    // if we have cache
     if (cachedData != null && cachedData.isNotEmpty) {
-      return cachedData.asMap();
+      double oldestElement = double.maxFinite;
+      // get the lowest "lastUpdated" number, meaning the oldest cache
+      cachedData.forEach((element) {
+        if (element["lastUpdated"] != null && oldestElement > element["lastUpdated"]) oldestElement = element["lastUpdated"];
+      });
+      DateTime lastTime = DateTime.fromMillisecondsSinceEpoch((oldestElement * 1000).floor(), isUtc: true);
 
-      // if we don't have a cache but we do have an internet connection get data from there
+      // if the oldest cache plus the expireAfter is older than the current time
+      // then refresh the cache if we can
+      if (lastTime.add(Duration(seconds: expireAfter)).isBefore(DateTime.now().toUtc())) {
+        if (isConnected || !dataConnection.requiresInternet) {
+          data = await dataConnection.getWhere(table, filters);
+
+          database.batchSave(table, readyData());
+
+          return data;
+        } else {
+          return cachedData.asMap();
+        }
+      } else {
+        return cachedData.asMap();
+      }
     } else if (isConnected || !dataConnection.requiresInternet) {
       data = await dataConnection.getWhere(table, filters);
 
-      if (cacheFromDataConnection) {
-        database.batchSave(table, readyData());
-      }
+      database.batchSave(table, readyData());
 
       return data;
-      // otherwise throw
     } else {
       return null;
     }
@@ -624,6 +665,7 @@ class CcData {
 
   /// takes the data from the db and converts it to a map the ccStyler can understand
   Map<String, String> parseStyle(Map data) {
+    print(data);
     Map<String, String> style = {};
     data.forEach((k, v) {
       v = jsonDecode(v["dataJson"]);

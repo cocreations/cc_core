@@ -49,31 +49,31 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
 
     styleData = data.parseStyle(styleData);
 
-    if (styleData.containsKey("appBarBanner") && styleData["appBarBanner"].startsWith("http")) {
+    if (styleData["appBarBanner"] != null && styleData["appBarBanner"].startsWith("http")) {
       return CcStyler.buildWithUrls(
         database,
         context,
         fallbackAppBanner: widget.appConfig.appName != null ? widget.appConfig.appName : "App",
-        appBarBanner: styleData.containsKey("appBarBanner") ? styleData["appBarBanner"] : null,
-        appBarBackground: styleData.containsKey("appBarBackground") ? Color(int.parse(styleData["appBarBackground"])) : Colors.blue,
-        backgroundColor: styleData.containsKey("backgroundColor") ? Color(int.parse(styleData["backgroundColor"])) : Colors.white,
-        appBarButtonColor: styleData.containsKey("appBarButtonColor") ? Color(int.parse(styleData["appBarButtonColor"])) : Colors.white,
-        primaryColor: styleData.containsKey("primaryColor") ? Color(int.parse(styleData["primaryColor"])) : Colors.blue,
-        accentColor: styleData.containsKey("accentColor") ? Color(int.parse(styleData["accentColor"])) : Colors.blueAccent,
-        sideDrawerType: styleData.containsKey("sideDrawerType") ? _parseDrawerType(styleData["sideDrawerType"]) : DrawerType.standard,
+        appBarBanner: styleData["appBarBanner"] != null ? styleData["appBarBanner"] : null,
+        appBarBackground: styleData["appBarBackground"] != null ? Color(int.parse(styleData["appBarBackground"])) : Colors.blue,
+        backgroundColor: styleData["backgroundColor"] != null ? Color(int.parse(styleData["backgroundColor"])) : Colors.white,
+        appBarButtonColor: styleData["appBarButtonColor"] != null ? Color(int.parse(styleData["appBarButtonColor"])) : Colors.white,
+        primaryColor: styleData["primaryColor"] != null ? Color(int.parse(styleData["primaryColor"])) : Colors.blue,
+        accentColor: styleData["accentColor"] != null ? Color(int.parse(styleData["accentColor"])) : Colors.blueAccent,
+        sideDrawerType: styleData["sideDrawerType"] != null ? _parseDrawerType(styleData["sideDrawerType"]) : DrawerType.standard,
       );
     } else {
       return CcStyler.buildWithAssets(
         database,
         context,
         fallbackAppBanner: widget.appConfig.appName != null ? widget.appConfig.appName : "App",
-        appBarBanner: styleData.containsKey("appBarBanner") ? styleData["appBarBanner"] : null,
-        appBarBackground: styleData.containsKey("appBarBackground") ? Color(int.parse(styleData["appBarBackground"])) : Colors.blue,
-        backgroundColor: styleData.containsKey("backgroundColor") ? Color(int.parse(styleData["backgroundColor"])) : Colors.white,
-        appBarButtonColor: styleData.containsKey("appBarButtonColor") ? Color(int.parse(styleData["appBarButtonColor"])) : Colors.white,
-        primaryColor: styleData.containsKey("primaryColor") ? Color(int.parse(styleData["primaryColor"])) : Colors.blue,
-        accentColor: styleData.containsKey("accentColor") ? Color(int.parse(styleData["accentColor"])) : Colors.blueAccent,
-        sideDrawerType: styleData.containsKey("sideDrawerType") ? _parseDrawerType(styleData["sideDrawerType"]) : DrawerType.standard,
+        appBarBanner: styleData["appBarBanner"] != null ? styleData["appBarBanner"] : null,
+        appBarBackground: styleData["appBarBackground"] != null ? Color(int.parse(styleData["appBarBackground"])) : Colors.blue,
+        backgroundColor: styleData["backgroundColor"] != null ? Color(int.parse(styleData["backgroundColor"])) : Colors.white,
+        appBarButtonColor: styleData["appBarButtonColor"] != null ? Color(int.parse(styleData["appBarButtonColor"])) : Colors.white,
+        primaryColor: styleData["primaryColor"] != null ? Color(int.parse(styleData["primaryColor"])) : Colors.blue,
+        accentColor: styleData["accentColor"] != null ? Color(int.parse(styleData["accentColor"])) : Colors.blueAccent,
+        sideDrawerType: styleData["sideDrawerType"] != null ? _parseDrawerType(styleData["sideDrawerType"]) : DrawerType.standard,
       );
     }
   }
@@ -98,7 +98,7 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
     Future.delayed(Duration.zero).then((_) {
       database = DBCache(widget.appConfig.appName);
 
-      data ??= CcData(database);
+      data ??= CcData(database, expireAfter: widget.appConfig.cacheRefresh * 60);
       dataSource ??= GetDataSource.getDataSource(widget.appConfig.dataSource);
       configSource ??= GetDataSource.getDataSource(widget.appConfig.configSource);
 
@@ -116,6 +116,7 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
     // need to make sure we have menus and style data
     if (loaded) {
       return CcApp(
+        cacheRefresh: widget.appConfig.cacheRefresh * 60,
         child: MaterialApp(
           theme: ThemeData(
             appBarTheme: AppBarTheme(brightness: Brightness.dark),

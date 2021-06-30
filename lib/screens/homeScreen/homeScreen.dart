@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cc_core/models/core/ccApp.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   HomeScreen({this.leftSideMenu, this.bottomNavBar, this.child});
   final Widget leftSideMenu;
   final Widget bottomNavBar;
   final Widget child;
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,9 +16,9 @@ class _HomeScreenState extends State<HomeScreen> {
         iconTheme: IconThemeData(color: CcApp.of(context).styler.appBarButtonColor),
         centerTitle: true,
       ),
-      bottomNavigationBar: widget.bottomNavBar,
-      drawer: widget.leftSideMenu,
-      body: widget.child,
+      bottomNavigationBar: bottomNavBar,
+      drawer: leftSideMenu,
+      body: child,
     );
   }
 }
