@@ -63,6 +63,9 @@ class CcData {
   final DBCache database;
 
   /// in seconds
+  /// 
+  /// This should be moved into database for cleaner management
+  /// And maybe add a noExpiry override in here for settings
   final int expireAfter;
   CcData(this.database, {this.expireAfter = 86400});
 
