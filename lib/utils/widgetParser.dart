@@ -1,6 +1,7 @@
 import 'package:cc_core/models/core/ccApp.dart';
+import 'package:cc_core/screens/introScreen/SwipeScreen.dart';
 import 'package:cc_core/screens/listScreens/ListViewScreen.dart';
-import 'package:cc_core/screens/simpleScreens/audioPlayerScreen.dart';
+import 'package:cc_core/screens/mediaPlayers/audioPlayerScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cc_core/screens/emptyTestScreen/emptyImageScreen.dart';
 import 'package:cc_core/screens/emptyTestScreen/emptyTestScreen.dart';
@@ -33,6 +34,8 @@ class WidgetParser extends StatelessWidget {
         return AudioPlayerScreen(arg, PlayerType.small);
       case "SingleButtonAudioPlayer":
         return AudioPlayerScreen(arg, PlayerType.buttonOnly);
+      case "SwipeableIntroScreen":
+        return SwipeScreen(arg);
       default:
         if (CcApp.of(context).parserModules != null) {
           var returnWidget = CcApp.of(context).parserModules.parse(widget, arg);

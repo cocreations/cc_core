@@ -142,7 +142,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
   }
 
   Future<List> getData() async {
-    CcData data = CcData(CcApp.of(context).database, expireAfter: CcApp.of(context).cacheRefresh);
+    CcData data = CcData(CcApp.of(context).database);
     // grab the data from the new table
     Map dbData = await data.getDBData(widget.tableName, CcApp.of(context).dataSource);
     List vals = List.from(dbData.values);

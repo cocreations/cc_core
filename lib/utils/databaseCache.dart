@@ -29,11 +29,14 @@ class DBCache {
   /// [dbName] is the file name of the db
   final String dbName;
 
+  /// In seconds.
+  final int expireAfter;
+
   /// this is only for testing DO NOT USE IN PRODUCTION
   final Directory testingDir;
   // final String appName = ConfigData.appName;
 
-  DBCache(this.dbName, {this.testingDir}) {
+  DBCache(this.dbName, this.expireAfter, {this.testingDir}) {
     database = _openDBCache(dbName);
   }
 

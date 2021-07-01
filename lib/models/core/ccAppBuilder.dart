@@ -81,7 +81,6 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
   Future<CcAppMenus> _getMenus() async {
     if (configSource.requiresInternet) {
       // if we need internet, just cache the data for later use
-      // TODO: add smart caching to this
       final json = await data.getDBData("menus", configSource);
 
       return CcAppMenus.createFromJson(data.parseMenus(json));
@@ -96,9 +95,9 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero).then((_) {
-      database = DBCache(widget.appConfig.appName);
+      database = DBCache(widget.appConfig.appName, widget.appConfig.cacheRefresh * 60);
 
-      data ??= CcData(database, expireAfter: widget.appConfig.cacheRefresh * 60);
+      data ??= CcData(database);
       dataSource ??= GetDataSource.getDataSource(widget.appConfig.dataSource);
       configSource ??= GetDataSource.getDataSource(widget.appConfig.configSource);
 

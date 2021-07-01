@@ -33,16 +33,19 @@ All the tools you need to build an app in 2 minutes.
 
   ##### type
   This is how the screen is accessed.
-  Here there are three options:
+  Here there are four options:
   * homeScreen
   * leftSide
   * bottom
+  * intro
 
-  There can only be one homeScreen and it is the first screen the user sees when opening the app.
+  There can only be one homeScreen and it is the first screen the user would normally see when opening the app.
 
   leftSide is the left hamburger menu.
 
   bottom is the bottom app bar menu.
+
+  intro is the screen the user sees when the open the app for the first time. It's recommended you use a `SwipeableIntroScreen`, but you can use whatever you wish.
 
   It's recommended that you also copy the homeScreen onto either leftSide, or bottom so the users can access it again once they've navigated away.
 

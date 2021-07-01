@@ -30,7 +30,7 @@ class LeftSideMenu extends StatelessWidget {
     List<Widget> buttons = [Container(height: 30)];
 
     if (drawerType == DrawerType.appBarBannerAtTop) {
-      buttons[0] = Container(height: 90, child: CcApp.of(context).styler.appBarBanner);
+      buttons[0] = Container(height: 90, margin: EdgeInsets.only(top: 25), child: Center(child: CcApp.of(context).styler.appBarBanner));
     }
 
     for (var i = 0; i < items.sideMenu.length; i++) {

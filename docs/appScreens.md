@@ -124,3 +124,19 @@ Example as a home screen:
 "appScreenParam":"https://www.catSounds.com/happy-cat.mp3,<b>Happy Cat</b>,https://www.catPhotos.com/happy-cat.jpg"
 }
 ```
+
+### SwipeableIntroScreen
+`SwipeableIntroScreen` will pull from a dataSource table and display the table as a carousel.
+It takes two positional parameters. The first in required but the other one is optional.
+This was primarily built to be used in the app intro (see README.md) but it can be used in other areas of your app.
+
+1. Database table.
+2. Continue button text. The text that's shown on the last page to bring you into the app. This is only shown if `SwipeableIntroScreen` is type intro. (see README.md) Defaults to "Ok"
+
+The table is pretty minimal compared to `ListViewScreen`, it only needs three columns.
+
+* id
+* appScreen
+* appScreenParam
+
+All of which are strings, and all you have probably seen before.

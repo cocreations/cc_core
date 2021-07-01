@@ -62,12 +62,17 @@ const MONTHS = {
 class CcData {
   final DBCache database;
 
-  /// in seconds
-  /// 
-  /// This should be moved into database for cleaner management
-  /// And maybe add a noExpiry override in here for settings
-  final int expireAfter;
-  CcData(this.database, {this.expireAfter = 86400});
+  /// In seconds
+  ///
+  /// By default CcData will use the databases expiry as its expiry time.
+  /// But if you need to override this for whatever reason, you can do so here.
+  final int expireAfterOverride;
+
+  /// If true, the object can expire.
+  ///
+  /// Defaults to true.
+  final bool canExpire;
+  CcData(this.database, {this.expireAfterOverride, this.canExpire = true});
 
   /// Returns the file extension of the url with the leading dot
   ///
@@ -176,6 +181,10 @@ class CcData {
 
     // if we have cache
     if (cachedData != null && cachedData.isNotEmpty) {
+      // if the object cant expire
+      // just return the object
+      if (!canExpire) return cachedData.asMap();
+
       double oldestElement = double.maxFinite;
       // get the lowest "lastUpdated" number, meaning the oldest cache
       cachedData.forEach((element) {
@@ -185,7 +194,7 @@ class CcData {
 
       // if the oldest cache plus the expireAfter is older than the current time
       // then refresh the cache if we can
-      if (lastTime.add(Duration(seconds: expireAfter)).isBefore(DateTime.now().toUtc())) {
+      if (lastTime.add(Duration(seconds: database.expireAfter)).isBefore(DateTime.now().toUtc())) {
         if (isConnected || !dataConnection.requiresInternet) {
           data = await dataConnection.loadData(table);
 
@@ -240,6 +249,8 @@ class CcData {
 
     // if we have cache
     if (cachedData != null && cachedData.isNotEmpty) {
+      if (!canExpire) return cachedData.asMap();
+
       double oldestElement = double.maxFinite;
       // get the lowest "lastUpdated" number, meaning the oldest cache
       cachedData.forEach((element) {
@@ -249,7 +260,7 @@ class CcData {
 
       // if the oldest cache plus the expireAfter is older than the current time
       // then refresh the cache if we can
-      if (lastTime.add(Duration(seconds: expireAfter)).isBefore(DateTime.now().toUtc())) {
+      if (lastTime.add(Duration(seconds: database.expireAfter)).isBefore(DateTime.now().toUtc())) {
         if (isConnected || !dataConnection.requiresInternet) {
           data = await dataConnection.getWhere(table, filters);
 
@@ -646,7 +657,8 @@ class CcData {
     Map<String, List> menus = {
       "leftSide": [],
       "bottom": [],
-      "homeScreen": [0],
+      "homeScreen": [],
+      "intro": [],
     };
     data.forEach((k, v) {
       v = jsonDecode(v["dataJson"]);
@@ -658,7 +670,9 @@ class CcData {
       } else if (v["type"] == "bottom") {
         menus["bottom"].add(v);
       } else if (v["type"] == "homeScreen") {
-        menus["homeScreen"][0] = v;
+        menus["homeScreen"] = [v];
+      } else if (v["type"] == "intro") {
+        menus["intro"] = [v];
       } else {
         throw ("parseMenus Error: Unknown menu ${v['type']}");
       }
@@ -668,7 +682,6 @@ class CcData {
 
   /// takes the data from the db and converts it to a map the ccStyler can understand
   Map<String, String> parseStyle(Map data) {
-    print(data);
     Map<String, String> style = {};
     data.forEach((k, v) {
       v = jsonDecode(v["dataJson"]);

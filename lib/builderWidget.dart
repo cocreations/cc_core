@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:cc_core/screens/introScreen/introScreen.dart';
 import 'package:cc_core/utils/parserModule.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +22,29 @@ class BuilderWidget extends StatefulWidget {
 }
 
 class _BuilderWidgetState extends State<BuilderWidget> {
-  // void functions
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero).then((_) async {
+      var shownIntro = await CcApp.of(context).database.loadSingleEntry("0", "_appData");
+
+      if (shownIntro != null) shownIntro = jsonDecode(shownIntro["dataJson"]);
+
+      if (shownIntro == null || shownIntro["shownIntro"] == null || shownIntro["shownIntro"] == "false") {
+        CcApp.of(context).database.saveDataToCache("_appData", "0", jsonEncode({"shownIntro": "true"}));
+        if (CcApp.of(context).menus.intro != null) {
+          if (mounted) {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => IntroScreen(CcApp.of(context).menus.intro.screen),
+              ),
+            );
+          }
+        }
+      }
+    });
+  }
+
   /// ontap for keeping track of the bottom menu
   void _ontap(CcMenuItem i) {
     setState(() {
@@ -57,6 +82,7 @@ class _BuilderWidgetState extends State<BuilderWidget> {
 
   /// duh
   List<BottomNavigationBarItem> bottomMenuItems = [];
+
   @override
   Widget build(BuildContext context) {
     // getting data
