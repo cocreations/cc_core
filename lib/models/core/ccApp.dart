@@ -18,27 +18,27 @@ class CcApp extends InheritedWidget {
   final String appId;
 
   /// this is where the app gets things like menu layouts and style data
-  final CcDataConnection configSource;
+  final CcDataConnection? configSource;
 
   /// this is where the app gets data that specific screens need, like soundtrails or images
   final CcDataConnection dataSource;
   final DBCache database;
   final Widget child;
-  final CcAppMenus menus;
-  final CcAppScreen homeScreen;
-  final CcStyler styler;
-  final CustomAppData appData;
-  final ParserModules parserModules;
+  final CcAppMenus? menus;
+  final CcAppScreen? homeScreen;
+  final CcStyler? styler;
+  final CustomAppData? appData;
+  final ParserModules? parserModules;
   /// In seconds
   final int cacheRefresh;
 
   CcApp({
-    Key key,
-    @required this.appId,
-    @required this.dataSource,
-    @required this.configSource,
-    @required this.database,
-    @required this.child,
+    Key? key,
+    required this.appId,
+    required this.dataSource,
+    required this.configSource,
+    required this.database,
+    required this.child,
     this.styler,
     this.menus,
     this.homeScreen,
@@ -110,7 +110,7 @@ class CcApp extends InheritedWidget {
     // TODO !
   }
 
-  static CcApp of(BuildContext context) {
+  static CcApp? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<CcApp>();
   }
 

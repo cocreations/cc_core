@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 class SwipeScreen extends StatefulWidget {
   SwipeScreen(this.arg, {this.shouldHavePopButton = false});
-  final String arg;
+  final String? arg;
   final bool shouldHavePopButton;
 
   @override
@@ -83,11 +83,11 @@ class _SwipeScreenState extends State<SwipeScreen> {
     );
   }
 
-  Duration getAnimationDuration(double dx) {
+  Duration getAnimationDuration(double? dx) {
     if (dx == 0.0) {
       return Duration(milliseconds: 500);
     }
-    if (dx < 0) {
+    if (dx! < 0) {
       return Duration(milliseconds: (1000000 / (dx * -1)).round().clamp(150, 500));
     }
 
@@ -98,11 +98,11 @@ class _SwipeScreenState extends State<SwipeScreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero).then((_) {
-      List<String> args = widget.arg.split(",");
+      List<String> args = widget.arg!.split(",");
       if (args.first.isEmpty) return;
       if (args.length >= 2) endButtonText = args[1];
-      CcData(CcApp.of(context).database).getDBData(args.first, CcApp.of(context).dataSource).then((dbData) {
-        List vals = List.from(dbData.values);
+      CcData(CcApp.of(context)!.database).getDBData(args.first, CcApp.of(context)!.dataSource).then((dbData) {
+        List vals = List.from(dbData!.values);
         pages = [];
         for (var val in vals) {
           val = jsonDecode(val["dataJson"]);
@@ -126,7 +126,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
                     Navigator.of(context).pop();
                   },
                   child: Text(endButtonText),
-                  style: ElevatedButton.styleFrom(primary: CcApp.of(context).styler.primaryColor),
+                  style: ElevatedButton.styleFrom(primary: CcApp.of(context)!.styler!.primaryColor),
                 ),
               ),
             ],
@@ -164,13 +164,13 @@ class _SwipeScreenState extends State<SwipeScreen> {
           child: Container(
             width: 25,
             height: 25,
-            child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(CcApp.of(context).styler.primaryColor)),
+            child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(CcApp.of(context)!.styler!.primaryColor)),
           ),
         ),
       );
     }
 
-    if (widget.arg.split(",").first.isEmpty) {
+    if (widget.arg!.split(",").first.isEmpty) {
       return Center(
         child: Text("No arguments were supplied.\nPlease read appScreens.md for more info."),
       );
@@ -180,12 +180,12 @@ class _SwipeScreenState extends State<SwipeScreen> {
       onHorizontalDragStart: (details) => _dragStartLocation = _controller.offset,
       onHorizontalDragUpdate: (details) {
         if (details.primaryDelta != null) {
-          if (_controller.offset - details.primaryDelta < 0) {
+          if (_controller.offset - details.primaryDelta! < 0) {
             _controller.jumpTo(0);
-          } else if (_controller.offset - details.primaryDelta > (screenWidth * pages.length) - screenWidth) {
+          } else if (_controller.offset - details.primaryDelta! > (screenWidth * pages.length) - screenWidth) {
             _controller.jumpTo((screenWidth * pages.length) - screenWidth);
           } else {
-            _controller.jumpTo(_controller.offset - details.primaryDelta);
+            _controller.jumpTo(_controller.offset - details.primaryDelta!);
           }
         }
       },

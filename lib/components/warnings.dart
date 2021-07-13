@@ -64,17 +64,17 @@ class Warning extends StatelessWidget {
   final String property;
 
   /// the object that triggered the warning
-  final String triggeredBy;
+  final String? triggeredBy;
 
   /// any other data that needed to be included like... well I don't actually know.
   /// You'll know when the time comes to use it.
-  final String data;
+  final String? data;
   @override
   String toString({
-    TextTreeConfiguration parentConfiguration,
+    TextTreeConfiguration? parentConfiguration,
     DiagnosticLevel minLevel = DiagnosticLevel.info,
   }) {
-    String warningInfo = WarningsList.getWarningInfo(code, property);
+    String? warningInfo = WarningsList.getWarningInfo(code, property);
     if (triggeredBy != null) {
       return "Code $code triggered by $triggeredBy: $warningInfo\n";
     }
@@ -83,7 +83,7 @@ class Warning extends StatelessWidget {
   }
 
   Widget build(BuildContext context) {
-    String warningInfo = WarningsList.getWarningInfo(code, property);
+    String? warningInfo = WarningsList.getWarningInfo(code, property);
 
     return Container(
       padding: EdgeInsets.all(20),

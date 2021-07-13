@@ -10,9 +10,9 @@ import 'package:flutter_html/flutter_html.dart';
 enum PlayerType { large, small, buttonOnly }
 
 class AudioPlayerScreen extends StatefulWidget {
-  const AudioPlayerScreen(this.args, this.playerType, {Key key}) : super(key: key);
+  const AudioPlayerScreen(this.args, this.playerType, {Key? key}) : super(key: key);
 
-  final String args;
+  final String? args;
   final PlayerType playerType;
 
   @override
@@ -21,21 +21,21 @@ class AudioPlayerScreen extends StatefulWidget {
 
 class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   String title = "";
-  File image;
-  AudioItem audioItem;
+  File? image;
+  AudioItem? audioItem;
   bool loading = true;
 
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero).then((_) async {
-      List<String> args = widget.args.split(",");
+      List<String> args = widget.args!.split(",");
 
       // I wanted to use a switch case with no break here, but dart wouldn't let me :(
-      if (args.length >= 3) image = await CcData(CcApp.of(context).database).getFile(args[2], "${CcApp.of(context).appId}Audio");
+      if (args.length >= 3) image = await CcData(CcApp.of(context)!.database).getFile(args[2], "${CcApp.of(context)!.appId}Audio");
       if (args.length >= 2) title = args[1];
       if (args[0].isNotEmpty) {
-        audioItem = await CcData(CcApp.of(context).database).getFile(args[0], "${CcApp.of(context).appId}Audio").then((file) {
+        audioItem = await CcData(CcApp.of(context)!.database).getFile(args[0], "${CcApp.of(context)!.appId}Audio").then((file) {
           return AudioItem.buildFromFile(file);
         });
       }
@@ -51,7 +51,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         child: Container(
           width: 25,
           height: 25,
-          child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(CcApp.of(context).styler.primaryColor)),
+          child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(CcApp.of(context)!.styler!.primaryColor)),
         ),
       );
     }
@@ -64,7 +64,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           children: [
             Container(
               margin: EdgeInsets.symmetric(horizontal: 35),
-              child: image != null ? Image.file(image) : Container(),
+              child: image != null ? Image.file(image!) : Container(),
             ),
             Html(
               data: title,
@@ -92,7 +92,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           children: [
             Container(
               margin: EdgeInsets.symmetric(horizontal: 35),
-              child: image != null ? Image.file(image) : Container(),
+              child: image != null ? Image.file(image!) : Container(),
             ),
             Html(
               data: title,

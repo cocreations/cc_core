@@ -10,7 +10,7 @@ import 'package:cc_core/utils/widgetParser.dart';
 
 class ListViewScreen extends StatefulWidget {
   ListViewScreen(this.tableName);
-  final String tableName;
+  final String? tableName;
 
   @override
   _ListViewScreenState createState() => _ListViewScreenState();
@@ -23,10 +23,10 @@ class _ListViewScreenState extends State<ListViewScreen> {
   // nah, you're fine. I think that works
 
   List<Widget> listItems = [];
-  List<String> imageUrls = [];
+  List<String?> imageUrls = [];
   List<ListItemStyle> listItemStyle = [];
 
-  void _openPage(NavigatorState navigator, Widget widget, String title) {
+  void _openPage(NavigatorState navigator, Widget widget, String? title) {
     navigator.push(
       // test this tomorrow
       MaterialPageRoute(
@@ -35,12 +35,12 @@ class _ListViewScreenState extends State<ListViewScreen> {
           body: widget,
           appBar: AppBar(
             title: Text(
-              title,
+              title!,
               style: TextStyle(color: Colors.white),
             ),
-            backgroundColor: CcApp.of(context).styler.appBarBackground,
+            backgroundColor: CcApp.of(context)!.styler!.appBarBackground,
             iconTheme: IconThemeData(
-              color: CcApp.of(context).styler.appBarButtonColor,
+              color: CcApp.of(context)!.styler!.appBarButtonColor,
             ),
             centerTitle: true,
           ),
@@ -50,10 +50,10 @@ class _ListViewScreenState extends State<ListViewScreen> {
   }
 
   Widget tileContent(
-    String name,
-    String appScreen,
-    String appScreenParam,
-    File image,
+    String? name,
+    String? appScreen,
+    String? appScreenParam,
+    File? image,
     ListItemStyle style,
     bool showAppScreenOnCard,
   ) {
@@ -92,11 +92,11 @@ class _ListViewScreenState extends State<ListViewScreen> {
         color: Colors.transparent,
         child: InkWell(
           hoverColor: Colors.black12.withOpacity(0.5),
-          focusColor: CcApp.of(context).styler.primaryColor.withOpacity(0.2),
-          splashColor: CcApp.of(context).styler.primaryColor.withOpacity(0.2),
+          focusColor: CcApp.of(context)!.styler!.primaryColor.withOpacity(0.2),
+          splashColor: CcApp.of(context)!.styler!.primaryColor.withOpacity(0.2),
           highlightColor: Colors.black12,
           borderRadius: BorderRadius.all(Radius.circular(style.cornerRadius)),
-          key: Key(name),
+          key: Key(name!),
           onTap: () {
             _openPage(
               Navigator.of(context),
@@ -114,10 +114,10 @@ class _ListViewScreenState extends State<ListViewScreen> {
   }
 
   Widget newTile(
-    String name,
-    String appScreen,
-    String appScreenParam,
-    File image,
+    String? name,
+    String? appScreen,
+    String? appScreenParam,
+    File? image,
     ListItemStyle style,
     bool showAppScreenOnCard,
   ) {
@@ -142,9 +142,9 @@ class _ListViewScreenState extends State<ListViewScreen> {
   }
 
   Future<List> getData() async {
-    CcData data = CcData(CcApp.of(context).database);
+    CcData data = CcData(CcApp.of(context)!.database);
     // grab the data from the new table
-    Map dbData = await data.getDBData(widget.tableName, CcApp.of(context).dataSource);
+    Map dbData = await (data.getDBData(widget.tableName, CcApp.of(context)!.dataSource) as FutureOr<Map<dynamic, dynamic>>);
     List vals = List.from(dbData.values);
     List returnValues = [];
     for (var val in vals) {
@@ -177,10 +177,10 @@ class _ListViewScreenState extends State<ListViewScreen> {
     Future.delayed(Duration.zero).then((_) {
       getData().then((vals) {
         if (mounted) {
-          CcData(CcApp.of(context).database).getFiles(imageUrls, widget.tableName, context).then((images) {
+          CcData(CcApp.of(context)!.database).getFiles(imageUrls, widget.tableName!, context).then((images) {
             listItems = [];
             for (var i = 0; i < vals.length; i++) {
-              listItems.add(newTile(vals[i]["name"], vals[i]["appScreen"], vals[i]["appScreenParam"], images[i], listItemStyle[i], vals[i]["displayAppScreen"]));
+              listItems.add(newTile(vals[i]["name"], vals[i]["appScreen"], vals[i]["appScreenParam"], images![i], listItemStyle[i], vals[i]["displayAppScreen"]));
             }
             if (mounted) {
               setState(() {

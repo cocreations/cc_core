@@ -16,7 +16,7 @@ class BuilderWidget extends StatefulWidget {
   BuilderWidget({this.dataLocation});
 
   /// for testing only, DO NOT USE IN PRODUCTION
-  final Map dataLocation;
+  final Map? dataLocation;
   @override
   _BuilderWidgetState createState() => _BuilderWidgetState();
 }
@@ -26,17 +26,17 @@ class _BuilderWidgetState extends State<BuilderWidget> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero).then((_) async {
-      var shownIntro = await CcApp.of(context).database.loadSingleEntry("0", "_appData");
+      var shownIntro = await CcApp.of(context)!.database.loadSingleEntry("0", "_appData");
 
       if (shownIntro != null) shownIntro = jsonDecode(shownIntro["dataJson"]);
 
       if (shownIntro == null || shownIntro["shownIntro"] == null || shownIntro["shownIntro"] == "false") {
-        CcApp.of(context).database.saveDataToCache("_appData", "0", jsonEncode({"shownIntro": "true"}));
-        if (CcApp.of(context).menus.intro != null) {
+        CcApp.of(context)!.database.saveDataToCache("_appData", "0", jsonEncode({"shownIntro": "true"}));
+        if (CcApp.of(context)!.menus!.intro != null) {
           if (mounted) {
             Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (BuildContext context) => IntroScreen(CcApp.of(context).menus.intro.screen),
+                builder: (BuildContext context) => IntroScreen(CcApp.of(context)!.menus!.intro!.screen),
               ),
             );
           }
@@ -53,7 +53,7 @@ class _BuilderWidgetState extends State<BuilderWidget> {
   }
 
   /// parses a widget then displays it
-  void showWidget(String appScreen, String appScreenParam) {
+  void showWidget(String appScreen, String? appScreenParam) {
     setState(() {
       display = WidgetParser(appScreen, appScreenParam);
     });
@@ -63,22 +63,22 @@ class _BuilderWidgetState extends State<BuilderWidget> {
   Widget homeScreen = Container();
 
   /// the widget currently being shown
-  Widget display;
+  Widget? display;
 
   /// the thing BuilderWidget returns
   Widget returnWidget = Container();
 
   /// the bottom bar widget if there is one
-  Widget bottomMenu;
+  Widget? bottomMenu;
 
   /// the screens that the bottom menu buttons point to
   List<Widget> bottomMenuScreens = [];
 
   /// the left side menu if there is one
-  Widget leftSideMenu;
+  Widget? leftSideMenu;
 
   /// all the menus and stuff
-  CcAppMenus menus;
+  CcAppMenus? menus;
 
   /// duh
   List<BottomNavigationBarItem> bottomMenuItems = [];
@@ -90,33 +90,33 @@ class _BuilderWidgetState extends State<BuilderWidget> {
       if (widget.dataLocation != null) {
         // we are in a test so get the test data from somewhere else
         setState(() {
-          menus = CcAppMenus.createFromJson(widget.dataLocation["menus"]);
+          menus = CcAppMenus.createFromJson(widget.dataLocation!["menus"]);
         });
       } else {
         setState(() {
-          menus = CcApp.of(context).menus;
+          menus = CcApp.of(context)!.menus;
         });
       }
     }
     // data has been got so display it
     if (menus != null) {
       // hey theres a bottom menu so lets display that
-      if (menus != null && menus.bottomMenu != null && menus.bottomMenu.length >= 2) {
+      if (menus != null && menus!.bottomMenu != null && menus!.bottomMenu!.length >= 2) {
         if (bottomMenuItems.isEmpty) {
           bottomMenu = BottomMenu(menus, _ontap);
         }
       }
-      if (menus.sideMenu != null) {
+      if (menus!.sideMenu != null) {
         leftSideMenu = LeftSideMenu(menus, showWidget);
       }
-      if (menus.homeScreen != null && display == null) {
+      if (menus!.homeScreen != null && display == null) {
         homeScreen = WidgetParser(
-          menus.homeScreen.screen.screenWidgetName,
-          menus.homeScreen.screen.parameter,
+          menus!.homeScreen!.screen.screenWidgetName,
+          menus!.homeScreen!.screen.parameter,
         );
         showWidget(
-          menus.homeScreen.screen.screenWidgetName,
-          menus.homeScreen.screen.parameter,
+          menus!.homeScreen!.screen.screenWidgetName,
+          menus!.homeScreen!.screen.parameter,
         );
       }
       returnWidget = HomeScreen(

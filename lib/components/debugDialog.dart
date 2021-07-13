@@ -10,7 +10,7 @@ class DebugDialog {
   bool canDisplay = false;
 
   Future<void> init(BuildContext context) async {
-    canDisplay = await CcData(CcApp.of(context).database, canExpire: false).getDBDataWhere("settings", CcApp.of(context).configSource, [DataFilter("name", Op.equals, "Show debug popups")], cacheFromDataConnection: false).then((value) {
+    canDisplay = await CcData(CcApp.of(context)!.database, canExpire: false).getDBDataWhere("settings", CcApp.of(context)!.configSource, [DataFilter("name", Op.equals, "Show debug popups")], cacheFromDataConnection: false).then((value) {
       if (value == null || value.isEmpty) return false;
       return jsonDecode(value.values.first["dataJson"])["value"] == "true";
     });

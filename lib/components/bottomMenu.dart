@@ -4,14 +4,14 @@ import 'package:cc_core/models/core/ccAppMenus.dart';
 class BottomMenu extends StatefulWidget {
   BottomMenu(this.menuItems, this.onTap);
   final Function onTap;
-  final CcAppMenus menuItems;
+  final CcAppMenus? menuItems;
   @override
   _BottomMenuState createState() => _BottomMenuState();
 }
 
 class _BottomMenuState extends State<BottomMenu> {
   void _ontap(int tappedItem) {
-    widget.onTap(widget.menuItems.bottomMenu[tappedItem]);
+    widget.onTap(widget.menuItems!.bottomMenu![tappedItem]);
     setState(() {
       _selectedIndex = tappedItem;
     });
@@ -23,7 +23,7 @@ class _BottomMenuState extends State<BottomMenu> {
   @override
   Widget build(BuildContext context) {
     if (items.length == 0) {
-      for (var menuItem in widget.menuItems.bottomMenu) {
+      for (var menuItem in widget.menuItems!.bottomMenu!) {
         items.add(BottomNavigationBarItem(
           // label: menuItem.title,
           icon: menuItem.icon ?? Container(),

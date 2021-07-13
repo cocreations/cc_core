@@ -61,7 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void deactivate() {
     print(settingsToUpdate);
-    CcApp.of(context).database.batchSave("settings", settingsToUpdate);
+    CcApp.of(context)!.database.batchSave("settings", settingsToUpdate);
     super.deactivate();
   }
 
@@ -77,18 +77,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
       /// This means if the 'default' set of settings changes - that will always be the list of settings shown,
       /// regardless of other settings in the local DB (so if we add or remove settings this will get reflected in this screen)
       ///
-      List<Map<String, dynamic>> localSqlSettings; // this is what is stored on the users phone in the SQLite DB
-      Map<int, Map<String, String>> defaultSettings; // this is the default
+      List<Map<String, dynamic>>? localSqlSettings; // this is what is stored on the users phone in the SQLite DB
+      Map<int, Map<String, String>>? defaultSettings; // this is the default
       void compareLocalSettingsToAssetDefaults() {
         /// Note that we base the setting id as being the index, and we load only the value from the local DB
 
-        defaultSettings.forEach((defKey, defValue) {
-          Map value = jsonDecode(defValue["dataJson"]);
-          for (var localIndex = 0; localIndex < localSqlSettings.length; localIndex++) {
+        defaultSettings!.forEach((defKey, defValue) {
+          Map? value = jsonDecode(defValue["dataJson"]!);
+          for (var localIndex = 0; localIndex < localSqlSettings!.length; localIndex++) {
             // dataId is now the id for the setting and therefore cannot be changed once set.
             // if a setting needs to be removed, its dataId must never be used again.
-            if (localSqlSettings[localIndex]["dataId"] == defKey.toString()) {
-              value["value"] = jsonDecode(localSqlSettings[localIndex]["dataJson"])["value"];
+            if (localSqlSettings![localIndex]["dataId"] == defKey.toString()) {
+              value!["value"] = jsonDecode(localSqlSettings![localIndex]["dataJson"])["value"];
             }
           }
           settings.add(Setting.fromMap(jsonDecode(jsonEncode(value)), defKey));
@@ -97,14 +97,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         setState(() {});
       }
 
-      Future<List<Map<String, dynamic>>> localDBSettingsFuture = CcApp.of(context).database.loadFromCache("settings");
+      Future<List<Map<String, dynamic>>> localDBSettingsFuture = CcApp.of(context)!.database.loadFromCache("settings");
       localDBSettingsFuture.then((localDBSettings) {
         localSqlSettings = localDBSettings;
 
         if (defaultSettings != null) compareLocalSettingsToAssetDefaults();
       });
 
-      CcApp.of(context).configSource.loadData("settings").then((defaultConfigSettings) {
+      CcApp.of(context)!.configSource!.loadData("settings").then((defaultConfigSettings) {
         defaultSettings = defaultConfigSettings;
 
         if (localSqlSettings != null) compareLocalSettingsToAssetDefaults();
@@ -117,12 +117,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
 class Setting {
   Setting({this.name, this.value, this.defaultValue, this.type, this.extraInfo, this.id});
-  String name;
-  SettingType type;
-  String extraInfo;
+  String? name;
+  SettingType? type;
+  String? extraInfo;
   dynamic value;
   dynamic defaultValue;
-  int id;
+  int? id;
 
   /// only works with CcData
   static Setting fromMap(Map map, int id) {
@@ -195,7 +195,7 @@ class Setting {
   }
 
   Widget toListItem(BuildContext context, void Function(dynamic) onChange) {
-    Widget valueWidget;
+    Widget? valueWidget;
 
     if (type == SettingType.BOOL) {
       valueWidget = Switch(
@@ -223,7 +223,7 @@ class Setting {
           Row(
             children: [
               Text(
-                name,
+                name!,
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
               ),
               extraInfo != null
@@ -238,7 +238,7 @@ class Setting {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(extraInfo),
+                                Text(extraInfo!),
                                 Container(
                                   margin: EdgeInsets.only(top: 10),
                                   child: FlatButton(
@@ -255,7 +255,7 @@ class Setting {
                   : Container(),
             ],
           ),
-          valueWidget,
+          valueWidget!,
         ],
       ),
     );

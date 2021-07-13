@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class DualWidgetScrollView extends StatefulWidget {
-  DualWidgetScrollView({this.topChild, this.bottomChild, this.height = 300, Key key}) : super(key: key);
-  final Widget topChild;
-  final Widget bottomChild;
+  DualWidgetScrollView({this.topChild, this.bottomChild, this.height = 300, Key? key}) : super(key: key);
+  final Widget? topChild;
+  final Widget? bottomChild;
   final double height;
 
   @override
@@ -17,21 +17,21 @@ class _DualWidgetScrollViewState extends State<DualWidgetScrollView> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onVerticalDragUpdate: (details) {
-        if (_scrollController.position.pixels - details.primaryDelta < (widget.height + 10)) {
-          _scrollController.jumpTo(_scrollController.position.pixels - details.primaryDelta);
+        if (_scrollController.position.pixels - details.primaryDelta! < (widget.height + 10)) {
+          _scrollController.jumpTo(_scrollController.position.pixels - details.primaryDelta!);
         }
       },
       onVerticalDragEnd: (details) {
-        if (details.primaryVelocity > 0) {
+        if (details.primaryVelocity! > 0) {
           _scrollController.animateTo(
             0,
-            duration: Duration(milliseconds: (600 - (details.primaryVelocity ~/ 10)).clamp(100, 600)),
+            duration: Duration(milliseconds: (600 - (details.primaryVelocity! ~/ 10)).clamp(100, 600)),
             curve: Curves.easeOutExpo,
           );
-        } else if (details.primaryVelocity < 0) {
+        } else if (details.primaryVelocity! < 0) {
           _scrollController.animateTo(
             widget.height,
-            duration: Duration(milliseconds: (600 + (details.primaryVelocity ~/ 10)).clamp(100, 600)),
+            duration: Duration(milliseconds: (600 + (details.primaryVelocity! ~/ 10)).clamp(100, 600)),
             curve: Curves.easeOutExpo,
           );
         } else {
@@ -94,26 +94,26 @@ class _DualWidgetScrollViewState extends State<DualWidgetScrollView> {
 
 class _FunkyBar extends StatefulWidget {
   _FunkyBar({
-    @required this.scrollController,
-    @required this.maxScrollOffset,
+    required this.scrollController,
+    required this.maxScrollOffset,
     this.minScrollOffset,
     this.onTapArrowDown,
     this.onTapArrowUp,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   final ScrollController scrollController;
   final double maxScrollOffset;
-  final double minScrollOffset;
-  final void Function() onTapArrowDown;
-  final void Function() onTapArrowUp;
+  final double? minScrollOffset;
+  final void Function()? onTapArrowDown;
+  final void Function()? onTapArrowUp;
 
   @override
   _FunkyBarState createState() => _FunkyBarState();
 }
 
 class _FunkyBarState extends State<_FunkyBar> {
-  double _minScrollOffset = 0;
+  double? _minScrollOffset = 0;
   double leftBar = 0;
   double rightBar = 0;
 
@@ -133,7 +133,7 @@ class _FunkyBarState extends State<_FunkyBar> {
   @override
   Widget build(BuildContext context) {
     if (widget.scrollController.positions.isNotEmpty) {
-      var offset = ((widget.scrollController.offset - _minScrollOffset) * 1.2) / (widget.maxScrollOffset - _minScrollOffset);
+      var offset = ((widget.scrollController.offset - _minScrollOffset!) * 1.2) / (widget.maxScrollOffset - _minScrollOffset!);
       offset -= 0.6;
 
       offset = offset.clamp(-0.6, 0.6);
@@ -146,11 +146,11 @@ class _FunkyBarState extends State<_FunkyBar> {
       onTap: () {
         if (rightBar < 0) {
           if (widget.onTapArrowDown != null) {
-            widget.onTapArrowDown();
+            widget.onTapArrowDown!();
           }
         } else {
           if (widget.onTapArrowUp != null) {
-            widget.onTapArrowUp();
+            widget.onTapArrowUp!();
           }
         }
       },

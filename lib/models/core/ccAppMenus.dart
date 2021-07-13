@@ -4,10 +4,10 @@ import 'package:cc_core/models/core/ccMenuItem.dart';
 ///
 /// These are the different menus available at the top level of a CC App
 class CcAppMenus {
-  final List<CcMenuItem> bottomMenu;
-  final List<CcMenuItem> sideMenu;
-  final CcMenuItem homeScreen;
-  final CcMenuItem intro;
+  final List<CcMenuItem>? bottomMenu;
+  final List<CcMenuItem>? sideMenu;
+  final CcMenuItem? homeScreen;
+  final CcMenuItem? intro;
 
   CcAppMenus({
     this.bottomMenu,
@@ -37,11 +37,11 @@ class CcAppMenus {
   ///  ]
   /// ```
   ///
-  static CcAppMenus createFromJson(Map json) {
+  static CcAppMenus createFromJson(Map? json) {
     List<CcMenuItem> bottomMenu = [];
     List<CcMenuItem> sideMenu = [];
-    CcMenuItem homeScreen;
-    CcMenuItem intro;
+    CcMenuItem? homeScreen;
+    CcMenuItem? intro;
     if (json == null) {
       throw Exception("ERROR null was passed instead of Map<String, List>");
     }

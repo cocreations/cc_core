@@ -68,7 +68,7 @@ class ConfigData {
   /// }
   /// ```
   ///
-  final Map<String, String> dataSource;
+  final Map<String, String>? dataSource;
 
   /// Config source effectively the location of the layout and style data.
   ///
@@ -128,16 +128,16 @@ class ConfigData {
   /// }
   /// ```
   ///
-  final Map<String, String> configSource;
+  final Map<String, String>? configSource;
 
   /// This is just the name of the app. Used for things like database file names and things.
-  final String appName;
+  final String? appName;
 
   /// This allows you to make an app-wide custom app state to augment and extend the capabilities of CcApp.
-  final CustomAppData appData;
+  final CustomAppData? appData;
 
   /// These allow you to add your own widgets and screens into the json widget parser.
-  final ParserModules parserModules;
+  final ParserModules? parserModules;
 
   /// How often the cache should refresh its data in minutes. 
   /// Defaults to 1440 which is one day.

@@ -5,7 +5,7 @@ import 'package:cc_core/utils/widgetParser.dart';
 import 'package:flutter/material.dart';
 
 class IntroScreen extends StatelessWidget {
-  const IntroScreen(this.screen, {Key key}) : super(key: key);
+  const IntroScreen(this.screen, {Key? key}) : super(key: key);
 
   final CcAppScreen screen;
 
@@ -24,7 +24,7 @@ class IntroScreen extends StatelessWidget {
               Navigator.of(context).pop();
             },
             child: Text("Ok"),
-            style: ElevatedButton.styleFrom(primary: CcApp.of(context).styler.primaryColor),
+            style: ElevatedButton.styleFrom(primary: CcApp.of(context)!.styler!.primaryColor),
           ),
         ),
       ],

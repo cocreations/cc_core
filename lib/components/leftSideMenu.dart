@@ -14,29 +14,29 @@ class LeftSideMenu extends StatelessWidget {
   LeftSideMenu(this.items, this.onTap, {this.customBackground});
 
   /// A list of objects that have an 'appScreen' parameter.
-  final CcAppMenus items;
+  final CcAppMenus? items;
 
   /// An ontap event for each item in the list that passes the 'appScreen' and 'appScreenParam' through
-  final void Function(String, String) onTap;
+  final void Function(String, String?) onTap;
 
   /// A custom background for the side menu
   ///
   /// Only works for compendiumStyle for now
-  final Widget Function(Widget) customBackground;
+  final Widget Function(Widget)? customBackground;
 
   @override
   Widget build(BuildContext context) {
-    DrawerType drawerType = CcApp.of(context).styler.sideDrawerType;
+    DrawerType drawerType = CcApp.of(context)!.styler!.sideDrawerType;
     List<Widget> buttons = [Container(height: 30)];
 
     if (drawerType == DrawerType.appBarBannerAtTop) {
-      buttons[0] = Container(height: 90, margin: EdgeInsets.only(top: 25), child: Center(child: CcApp.of(context).styler.appBarBanner));
+      buttons[0] = Container(height: 90, margin: EdgeInsets.only(top: 25), child: Center(child: CcApp.of(context)!.styler!.appBarBanner));
     }
 
-    for (var i = 0; i < items.sideMenu.length; i++) {
-      Widget icon = Container();
-      if (items.sideMenu[i].icon != null) {
-        icon = items.sideMenu[i].icon;
+    for (var i = 0; i < items!.sideMenu!.length; i++) {
+      Widget? icon = Container();
+      if (items!.sideMenu![i].icon != null) {
+        icon = items!.sideMenu![i].icon;
         icon = Container(
           child: icon,
           margin: EdgeInsets.only(right: 40),
@@ -47,8 +47,8 @@ class LeftSideMenu extends StatelessWidget {
           onTap: () {
             Navigator.of(context).pop();
             return onTap(
-              items.sideMenu[i].screen.screenWidgetName,
-              items.sideMenu[i].screen.parameter,
+              items!.sideMenu![i].screen.screenWidgetName,
+              items!.sideMenu![i].screen.parameter,
             );
           },
           child: Container(
@@ -61,7 +61,7 @@ class LeftSideMenu extends StatelessWidget {
               children: [
                 icon,
                 Text(
-                  items.sideMenu[i].title,
+                  items!.sideMenu![i].title,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
               ],
@@ -77,14 +77,14 @@ class LeftSideMenu extends StatelessWidget {
         width: MediaQuery.of(context).size.width * 0.8,
         height: MediaQuery.of(context).size.height * 0.85,
         decoration: BoxDecoration(
-          color: CcApp.of(context).styler.backgroundColor,
+          color: CcApp.of(context)!.styler!.backgroundColor,
           borderRadius: BorderRadius.only(
             bottomRight: Radius.circular(25),
             topRight: Radius.circular(25),
           ),
         ),
         child: customBackground != null
-            ? customBackground(
+            ? customBackground!(
                 Container(
                   padding: EdgeInsets.only(left: 28, top: 28, bottom: 28),
                   child: Column(

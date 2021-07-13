@@ -7,7 +7,7 @@ class BackgroundRipple extends StatelessWidget {
     this.rippleSeed = 1,
   });
 
-  final Widget child;
+  final Widget? child;
 
   /// this ensures that the ripple is not different every time the user enters a screen
   final int rippleSeed;
@@ -70,7 +70,7 @@ class BackgroundRipple extends StatelessWidget {
             )
           ],
         ),
-        child,
+        child!,
       ],
     );
   }

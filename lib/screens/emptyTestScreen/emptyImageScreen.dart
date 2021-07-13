@@ -4,7 +4,7 @@ import 'package:cc_core/models/core/ccData.dart';
 
 class EmptyImageScreen extends StatefulWidget {
   EmptyImageScreen({this.url});
-  final String url;
+  final String? url;
   @override
   _EmptyImageScreenState createState() => _EmptyImageScreenState();
 }
@@ -17,12 +17,12 @@ class _EmptyImageScreenState extends State<EmptyImageScreen> {
   Widget build(BuildContext context) {
     if (loading) {
       // getting file from the db
-      CcData data = CcData(CcApp.of(context).database);
+      CcData data = CcData(CcApp.of(context)!.database);
       data.getFile(widget.url, "images").then(
             (i) => setState(
               () {
                 loading = false;
-                imageWidget = Image.file(i);
+                imageWidget = Image.file(i!);
               },
             ),
           );

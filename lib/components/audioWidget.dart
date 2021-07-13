@@ -22,31 +22,31 @@ class AudioWidget extends StatefulWidget {
   });
 
   /// If [audioUrl] is null, [audioItem] must not be null
-  final String audioUrl;
+  final String? audioUrl;
 
   /// If [audioItem] is null, [audioUrl] must not be null
-  final AudioItem audioItem;
-  final File imageFile;
+  final AudioItem? audioItem;
+  final File? imageFile;
   final String name;
   final String fileDir;
   final bool enableSeek;
   final bool onlyButton;
   final double playButtonSize;
-  final String heroTag;
+  final String? heroTag;
 
   /// onPlay is called when the audio item is played
-  final void Function() onPlay;
+  final void Function()? onPlay;
   @override
   _AudioWidgetState createState() => _AudioWidgetState();
 }
 
 class _AudioWidgetState extends State<AudioWidget> {
-  StreamSubscription progressBar;
-  StreamSubscription onAudioStateChange;
+  late StreamSubscription progressBar;
+  late StreamSubscription onAudioStateChange;
 
-  AudioItem _audioItem;
+  AudioItem? _audioItem;
 
-  File imageFile;
+  File? imageFile;
   bool isSliderSliding = false;
   double sliderOverride = 0;
 
@@ -66,7 +66,7 @@ class _AudioWidgetState extends State<AudioWidget> {
     if (widget.audioItem != null) {
       _audioItem = widget.audioItem;
 
-      progressBar = _audioItem.onSeekChange.listen((newPos) async {
+      progressBar = _audioItem!.onSeekChange.listen((newPos) async {
         if (mounted) {
           setState(() {
             // this basically makes sure when you return the soundtrail
@@ -75,7 +75,7 @@ class _AudioWidgetState extends State<AudioWidget> {
         }
       });
 
-      onAudioStateChange = _audioItem.onStateChange.listen((event) {
+      onAudioStateChange = _audioItem!.onStateChange.listen((event) {
         setState(() {});
       });
     }
@@ -83,11 +83,11 @@ class _AudioWidgetState extends State<AudioWidget> {
     super.initState();
     Future.delayed(Duration.zero).then((value) async {
       if (widget.audioItem == null) {
-        File audioFile = await CcData(CcApp.of(context).database).getFile(widget.audioUrl, widget.fileDir);
+        File? audioFile = await CcData(CcApp.of(context)!.database).getFile(widget.audioUrl, widget.fileDir);
 
         _audioItem = await AudioItem.buildFromFile(audioFile);
 
-        progressBar = _audioItem.onSeekChange.listen((newPos) async {
+        progressBar = _audioItem!.onSeekChange.listen((newPos) async {
           if (mounted) {
             setState(() {
               // this basically makes sure when you return the soundtrail
@@ -96,7 +96,7 @@ class _AudioWidgetState extends State<AudioWidget> {
           }
         });
 
-        onAudioStateChange = _audioItem.onStateChange.listen((event) {
+        onAudioStateChange = _audioItem!.onStateChange.listen((event) {
           setState(() {});
         });
       }
@@ -129,7 +129,7 @@ class _AudioWidgetState extends State<AudioWidget> {
                 IconButton(
                   icon: Icon(
                     Icons.play_arrow,
-                    color: CcApp.of(context).styler.primaryColor,
+                    color: CcApp.of(context)!.styler!.primaryColor,
                   ),
                   onPressed: () => launch(url),
                 ),
@@ -146,16 +146,16 @@ class _AudioWidgetState extends State<AudioWidget> {
 
     if (_audioItem == null) return "0:00 / 0:00";
 
-    if (_audioItem.seek.inSeconds - (_audioItem.seek.inMinutes * 60) < 10) {
-      text = "${_audioItem.seek.inMinutes}:0${_audioItem.seek.inSeconds - (_audioItem.seek.inMinutes * 60)} / ";
+    if (_audioItem!.seek!.inSeconds - (_audioItem!.seek!.inMinutes * 60) < 10) {
+      text = "${_audioItem!.seek!.inMinutes}:0${_audioItem!.seek!.inSeconds - (_audioItem!.seek!.inMinutes * 60)} / ";
     } else {
-      text = "${_audioItem.seek.inMinutes}:${_audioItem.seek.inSeconds - (_audioItem.seek.inMinutes * 60)} / ";
+      text = "${_audioItem!.seek!.inMinutes}:${_audioItem!.seek!.inSeconds - (_audioItem!.seek!.inMinutes * 60)} / ";
     }
 
-    if (_audioItem.duration.inSeconds - (_audioItem.duration.inMinutes * 60) < 10) {
-      text += "${_audioItem.duration.inMinutes}:0${_audioItem.duration.inSeconds - (_audioItem.duration.inMinutes * 60)}";
+    if (_audioItem!.duration.inSeconds - (_audioItem!.duration.inMinutes * 60) < 10) {
+      text += "${_audioItem!.duration.inMinutes}:0${_audioItem!.duration.inSeconds - (_audioItem!.duration.inMinutes * 60)}";
     } else {
-      text += "${_audioItem.duration.inMinutes}:${_audioItem.duration.inSeconds - (_audioItem.duration.inMinutes * 60)}";
+      text += "${_audioItem!.duration.inMinutes}:${_audioItem!.duration.inSeconds - (_audioItem!.duration.inMinutes * 60)}";
     }
 
     return text;
@@ -163,10 +163,10 @@ class _AudioWidgetState extends State<AudioWidget> {
 
   double _progressBarValue() {
     if (!isSliderSliding) {
-      if (_audioItem.seek == null || _audioItem.duration == null) {
+      if (_audioItem!.seek == null || _audioItem!.duration == null) {
         return 0;
       }
-      var returnVal = _audioItem.seek.inMilliseconds / _audioItem.duration.inMilliseconds;
+      var returnVal = _audioItem!.seek!.inMilliseconds / _audioItem!.duration.inMilliseconds;
       if (returnVal > 1) return 1;
       return returnVal;
     }
@@ -176,25 +176,25 @@ class _AudioWidgetState extends State<AudioWidget> {
   Widget _playPause() {
     if (_audioItem == null) return Container();
 
-    if (_audioItem.state == AudioState.noAudio) return Container();
+    if (_audioItem!.state == AudioState.noAudio) return Container();
 
-    if (_audioItem.state != AudioState.playing) {
+    if (_audioItem!.state != AudioState.playing) {
       return IconButton(
         tooltip: "Play",
         iconSize: widget.playButtonSize,
         icon: Icon(
           Icons.play_arrow,
-          color: CcApp.of(context).styler.primaryColor,
+          color: CcApp.of(context)!.styler!.primaryColor,
         ),
         onPressed: () {
           if (widget.onPlay != null) {
-            widget.onPlay();
+            widget.onPlay!();
           }
 
-          if (_audioItem.state == AudioState.paused) {
-            _audioItem.resume();
+          if (_audioItem!.state == AudioState.paused) {
+            _audioItem!.resume();
           } else {
-            _audioItem.play();
+            _audioItem!.play();
           }
         },
       );
@@ -204,10 +204,10 @@ class _AudioWidgetState extends State<AudioWidget> {
         iconSize: widget.playButtonSize,
         icon: Icon(
           Icons.pause,
-          color: CcApp.of(context).styler.primaryColor,
+          color: CcApp.of(context)!.styler!.primaryColor,
         ),
         onPressed: () {
-          _audioItem.pause();
+          _audioItem!.pause();
         },
       );
     }
@@ -220,7 +220,7 @@ class _AudioWidgetState extends State<AudioWidget> {
     );
 
     if (widget.imageFile != null) {
-      image = Image.file(widget.imageFile, fit: BoxFit.contain);
+      image = Image.file(widget.imageFile!, fit: BoxFit.contain);
     } else {
       return Container(height: 60, width: 60, color: Colors.transparent);
     }
@@ -230,7 +230,7 @@ class _AudioWidgetState extends State<AudioWidget> {
         height: 60,
         width: 60,
         margin: EdgeInsets.only(right: 10),
-        child: Hero(tag: widget.heroTag, child: image),
+        child: Hero(tag: widget.heroTag!, child: image),
       );
     }
     return Container(
@@ -243,14 +243,14 @@ class _AudioWidgetState extends State<AudioWidget> {
 
   Widget _seekBar() {
     if (_audioItem == null) return Container();
-    if (_audioItem.state == AudioState.noAudio) return Container();
+    if (_audioItem!.state == AudioState.noAudio) return Container();
     if (widget.enableSeek) {
       return Container(
         height: 25,
         margin: EdgeInsets.only(bottom: 10),
         child: Slider(
           value: _progressBarValue(),
-          activeColor: CcApp.of(context).styler.primaryColor,
+          activeColor: CcApp.of(context)!.styler!.primaryColor,
           inactiveColor: Colors.black12,
           onChangeStart: (value) {
             isSliderSliding = true;
@@ -263,8 +263,8 @@ class _AudioWidgetState extends State<AudioWidget> {
             //   _showNeverGonnaGiveYouUp(() => _audioItem.pause());
             // }
 
-            _audioItem.seek = Duration(
-              milliseconds: (value * _audioItem.duration.inMilliseconds).round(),
+            _audioItem!.seek = Duration(
+              milliseconds: (value * _audioItem!.duration.inMilliseconds).round(),
             );
           },
           onChanged: (value) => setState(() => sliderOverride = value),
@@ -276,7 +276,7 @@ class _AudioWidgetState extends State<AudioWidget> {
       height: 6,
       child: LinearProgressIndicator(
         value: _progressBarValue(),
-        valueColor: AlwaysStoppedAnimation<Color>(CcApp.of(context).styler.primaryColor),
+        valueColor: AlwaysStoppedAnimation<Color>(CcApp.of(context)!.styler!.primaryColor),
         backgroundColor: Colors.black12,
       ),
     );
@@ -289,13 +289,13 @@ class _AudioWidgetState extends State<AudioWidget> {
         child: Container(
           width: 25,
           height: 25,
-          child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(CcApp.of(context).styler.primaryColor)),
+          child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(CcApp.of(context)!.styler!.primaryColor)),
         ),
       );
     }
 
     if (widget.onlyButton) {
-      return _audioItem.state != AudioState.noAudio ? _playPause() : Container();
+      return _audioItem!.state != AudioState.noAudio ? _playPause() : Container();
     }
 
     return Container(
@@ -326,7 +326,7 @@ class _AudioWidgetState extends State<AudioWidget> {
                       ),
                       Text(
                         _durationText(),
-                        style: TextStyle(color: CcApp.of(context).styler.primaryColor),
+                        style: TextStyle(color: CcApp.of(context)!.styler!.primaryColor),
                       )
                     ],
                   ),
@@ -342,7 +342,7 @@ class _AudioWidgetState extends State<AudioWidget> {
                   //   ),
                   //   onPressed: () {},
                   // ),
-                  _audioItem.state != AudioState.noAudio ? _playPause() : Container(),
+                  _audioItem!.state != AudioState.noAudio ? _playPause() : Container(),
                   // IconButton(
                   //   icon: Icon(
                   //     Icons.fast_forward,

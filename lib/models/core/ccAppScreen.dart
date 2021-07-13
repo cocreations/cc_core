@@ -8,14 +8,14 @@ import 'package:flutter/material.dart';
 /// (as well as menus to access them)
 class CcAppScreen {
   final String screenWidgetName;
-  final String parameter;
+  final String? parameter;
 
   /// Creates a CoCreations App Screen
   ///
   /// Pass in the screen identifier as a string (must correspond to a screen defined in the widgetParser)
   /// An optional parameter can also be sent to the widget screen
   CcAppScreen({
-    @required this.screenWidgetName,
+    required this.screenWidgetName,
     this.parameter,
   });
 
@@ -29,6 +29,6 @@ class CcAppScreen {
   ///
   /// ```
   CcAppScreen.createFromJson(Map json)
-      : this.screenWidgetName = json["appScreen"].toString() ?? null,
-        this.parameter = json["appScreenParam"].toString() ?? null;
+      : this.screenWidgetName = json["appScreen"].toString(),
+        this.parameter = json["appScreenParam"].toString();
 }

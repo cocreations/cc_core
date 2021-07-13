@@ -25,13 +25,13 @@ class MapScreen extends StatefulWidget {
   });
 
   /// the url for the MBTiles file
-  final String mbTilesUrl;
+  final String? mbTilesUrl;
   // final MapOverlay mapOverlay;
   // final LocationDot locationDot;
   final bool loadFromOSM;
-  final LatLng centre;
-  final MapController mapController;
-  final void Function(LatLng) onTap;
+  final LatLng? centre;
+  final MapController? mapController;
+  final void Function(LatLng)? onTap;
   @override
   _MapScreenState createState() => _MapScreenState();
 }
@@ -40,15 +40,15 @@ class _MapScreenState extends State<MapScreen> {
   List<Polygon> polygons = [];
   List<CircleMarker> circles = [];
   bool gotFile = false;
-  File mapFile;
-  LatLng centre;
-  CircleLayerOptions cirLayer;
-  PolygonLayerOptions polyLayer;
-  OverlayImageLayerOptions imageLayer;
-  MapController mapController;
-  List<LayerOptions> mapLayers = [];
+  File? mapFile;
+  LatLng? centre;
+  CircleLayerOptions? cirLayer;
+  PolygonLayerOptions? polyLayer;
+  OverlayImageLayerOptions? imageLayer;
+  MapController? mapController;
+  List<LayerOptions?> mapLayers = [];
   bool loading = true;
-  TileLayerOptions tileLayerOptions;
+  TileLayerOptions? tileLayerOptions;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,7 @@ class _MapScreenState extends State<MapScreen> {
 
     if (!gotFile && !widget.loadFromOSM && widget.mbTilesUrl != null) {
       // time to load files
-      CcData data = CcData(CcApp.of(context).database);
+      CcData data = CcData(CcApp.of(context)!.database);
       // get map file
       data.getFile(widget.mbTilesUrl, "maps").then((val) {
         setState(() {
@@ -106,11 +106,11 @@ class _MapScreenState extends State<MapScreen> {
 
     return FlutterMap(
       options: MapOptions(
-        onTap: (latlng) => widget.onTap(latlng),
+        onTap: (latlng) => widget.onTap!(latlng),
         center: centre,
         zoom: 18.0,
       ),
-      layers: mapLayers,
+      layers: mapLayers as List<LayerOptions>,
       mapController: mapController,
     );
   }

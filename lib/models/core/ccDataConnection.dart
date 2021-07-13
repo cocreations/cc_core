@@ -11,13 +11,13 @@ enum BackendType { airTable, jsonRest }
 /// The abstract class for defining a data source to populate the app from
 abstract class CcDataConnection {
   bool get requiresInternet;
-  Future<dynamic> loadData(String table);
+  Future<dynamic> loadData(String? table);
   Future<dynamic> getWhere(String table, List<DataFilter> filters);
 }
 
 /// Takes a string from config and returns a CcDataConnection
 class GetDataSource {
-  static CcDataConnection getDataSource(Map configMap) {
+  static CcDataConnection? getDataSource(Map configMap) {
     switch (configMap['backendType']) {
       case "airTable":
         return AirTableDataConnection(configMap["apiKey"], configMap["baseId"]);
@@ -37,13 +37,13 @@ class GetDataSource {
 /// TODO : Make a document defining how to use this, and add the link to that here !
 class AirTableDataConnection extends CcDataConnection {
   bool get requiresInternet => true;
-  final String apiKey;
-  final String baseId;
-  List validationErrors;
+  final String? apiKey;
+  final String? baseId;
+  List? validationErrors;
 
   AirTableDataConnection(this.apiKey, this.baseId);
 
-  Future<dynamic> loadData(String table) async {
+  Future<dynamic> loadData(String? table) async {
     //does a get request with all the auth data and stuff to airtable
     http.Response response = await http.get(Uri.parse("https://api.airtable.com/v0/$baseId/$table?maxRecords=500&view=Grid%20view"), headers: {"Authorization": "Bearer $apiKey"});
 
@@ -66,7 +66,7 @@ class AirTableDataConnection extends CcDataConnection {
     data['records'].forEach((item) {
       var id = item['fields']['id'];
       returnData.putIfAbsent(i, () => {'dataId': '$id', 'dataJson': ""});
-      returnData[i]['dataJson'] = jsonEncode(item['fields']);
+      returnData[i]!['dataJson'] = jsonEncode(item['fields']);
       i++;
     });
 
@@ -98,12 +98,12 @@ class AirTableDataConnection extends CcDataConnection {
 /// TODO : Make a document defining how to use this, and add the link to that here !
 class FirebaseDataConnection extends CcDataConnection {
   bool get requiresInternet => true;
-  final String baseId;
-  List validationErrors;
+  final String? baseId;
+  List? validationErrors;
 
   FirebaseDataConnection(this.baseId);
 
-  Future<dynamic> loadData(String table) async {
+  Future<dynamic> loadData(String? table) async {
     // need to fix this later when we have more people
     http.Response response = await http.post(
       Uri.parse("https://firestore.googleapis.com/v1/projects/$baseId/databases/(default)/documents:runQuery"),
@@ -196,7 +196,7 @@ class FirebaseDataConnection extends CcDataConnection {
         item['document']['fields'].forEach((key, value) {
           fields.putIfAbsent(key, () => removeUselessFirebaseStuff(value));
         });
-        returnData[i]['dataJson'] = jsonEncode(fields);
+        returnData[i]!['dataJson'] = jsonEncode(fields);
         i++;
       }
     });
@@ -230,12 +230,12 @@ class AssetDataConnection extends CcDataConnection {
   bool get requiresInternet => false;
   AssetDataConnection(this.folderPath);
 
-  final String folderPath;
+  final String? folderPath;
 
   /// don't include the .json extension
-  Future loadData(String assetName) async {
+  Future loadData(String? assetName) async {
     String path;
-    if (folderPath.endsWith("/")) {
+    if (folderPath!.endsWith("/")) {
       path = "$folderPath$assetName";
     } else {
       path = "$folderPath/$assetName";

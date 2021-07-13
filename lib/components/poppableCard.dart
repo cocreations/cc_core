@@ -11,10 +11,10 @@ class PoppableCard extends StatelessWidget {
     this.height,
   });
   final double borderRadius;
-  final Widget child;
+  final Widget? child;
   final Color colour;
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
   @override
   Widget build(BuildContext context) {
     Color colour = Colors.white;

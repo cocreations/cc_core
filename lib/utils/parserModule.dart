@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 /// ```
 abstract class ParserModule {
   String get name;
-  Widget buildWidget(String arg);
+  Widget buildWidget(String? arg);
 }
 
 /// This can be added to the widget parser to allow your app to parse your custom app specific json.
@@ -40,10 +40,10 @@ class ParserModules {
   ParserModules(this.modules);
   final Set<ParserModule> modules;
 
-  Widget parse(String name, String arg) {
+  Widget parse(String? name, String? arg) {
     ParserModule module = modules.firstWhere((mod) => mod.name == name, orElse: () {
       throw Exception("Couldn't find module $name in modules $modules");
-    });
+    } as ParserModule Function()?);
 
     return module.buildWidget(arg);
   }

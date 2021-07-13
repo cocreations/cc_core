@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 class StrokeText extends StatelessWidget {
   final String text;
-  final double fontSize;
-  final FontWeight fontWeight;
-  final Color color;
-  final Color strokeColor;
-  final double strokeWidth;
+  final double? fontSize;
+  final FontWeight? fontWeight;
+  final Color? color;
+  final Color? strokeColor;
+  final double? strokeWidth;
 
   const StrokeText(
     this.text, {
-    Key key,
+    Key? key,
     this.fontSize,
     this.fontWeight,
     this.color,
@@ -27,7 +27,7 @@ class StrokeText extends StatelessWidget {
           style: TextStyle(
             fontSize: fontSize,
             fontWeight: fontWeight,
-            foreground: Paint()..color = color,
+            foreground: Paint()..color = color!,
           ),
         ),
         Text(
@@ -36,8 +36,8 @@ class StrokeText extends StatelessWidget {
             fontSize: fontSize,
             fontWeight: fontWeight,
             foreground: Paint()
-              ..strokeWidth = strokeWidth
-              ..color = strokeColor
+              ..strokeWidth = strokeWidth!
+              ..color = strokeColor!
               ..style = PaintingStyle.stroke,
           ),
         ),

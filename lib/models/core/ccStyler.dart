@@ -17,7 +17,7 @@ class CcStyler {
     this.sideDrawerType = DrawerType.standard,
   });
   final Color appBarBackground;
-  final Widget appBarBanner;
+  final Widget? appBarBanner;
   final Color backgroundColor;
   final Color appBarButtonColor;
   final Color primaryColor;
@@ -31,11 +31,11 @@ class CcStyler {
 
   /// A static method that takes image assets and turns them into a CcStyler
   static CcStyler buildWithAssets(
-    DBCache database,
+    DBCache? database,
     BuildContext context, {
-    String fallbackAppBanner = "App",
+    String? fallbackAppBanner = "App",
     Color appBarBackground = Colors.blue,
-    String appBarBanner,
+    String? appBarBanner,
     Color backgroundColor = Colors.white,
     Color appBarButtonColor = Colors.white,
     Color primaryColor = Colors.blue,
@@ -47,7 +47,7 @@ class CcStyler {
     if (appBarBanner != null) {
       widgets.insert(0, Image.asset(appBarBanner, width: 200));
     } else {
-      widgets.insert(0, Text(fallbackAppBanner));
+      widgets.insert(0, Text(fallbackAppBanner!));
     }
 
     return CcStyler(
@@ -63,11 +63,11 @@ class CcStyler {
 
   /// A static method that takes image urls and turns them into a CcStyler
   static Future<CcStyler> buildWithUrls(
-    DBCache database,
+    DBCache? database,
     BuildContext context, {
-    String fallbackAppBanner = "App",
+    String? fallbackAppBanner = "App",
     Color appBarBackground = Colors.blue,
-    String appBarBanner,
+    String? appBarBanner,
     Color backgroundColor = Colors.white,
     Color appBarButtonColor = Colors.white,
     Color primaryColor = Colors.blue,
@@ -81,12 +81,12 @@ class CcStyler {
       urls.add(appBarBanner);
       fileIds.add(0);
     }
-    List<File> files = await CcData(database).getFiles(urls, "style", context);
+    List<File?> files = await (CcData(database).getFiles(urls, "style", context) as Future<List<File?>>);
 
     if (files[fileIds.indexOf(0)] != null) {
-      widgets.insert(fileIds.indexOf(0), Image.file(files[fileIds.indexOf(0)], width: 200));
+      widgets.insert(fileIds.indexOf(0), Image.file(files[fileIds.indexOf(0)]!, width: 200));
     } else {
-      widgets.insert(fileIds.indexOf(0), Text(fallbackAppBanner));
+      widgets.insert(fileIds.indexOf(0), Text(fallbackAppBanner!));
     }
 
     return CcStyler(

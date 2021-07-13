@@ -19,17 +19,17 @@ class CcAppBuilder extends StatefulWidget {
 }
 
 class _CcAppBuilderState extends State<CcAppBuilder> {
-  DBCache database;
+  DBCache? database;
   bool loaded = false;
-  CcAppMenus menus;
-  CcAppScreen homeScreen;
-  CcDataConnection dataSource;
-  CcDataConnection configSource;
-  Map styleConfigData;
-  CcData data;
-  CcStyler style;
+  CcAppMenus? menus;
+  CcAppScreen? homeScreen;
+  CcDataConnection? dataSource;
+  CcDataConnection? configSource;
+  Map? styleConfigData;
+  CcData? data;
+  CcStyler? style;
 
-  DrawerType _parseDrawerType(String string) {
+  DrawerType _parseDrawerType(String? string) {
     switch (string) {
       case "appBarBannerAtTop":
         return DrawerType.appBarBannerAtTop;
@@ -45,9 +45,9 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
   }
 
   Future<CcStyler> _getStyle() async {
-    var styleData = await data.getDBData("style", configSource);
+    var styleData = await (data!.getDBData("style", configSource!) as Future<Map<dynamic, dynamic>>);
 
-    styleData = data.parseStyle(styleData);
+    styleData = data!.parseStyle(styleData);
 
     if (styleData["appBarBanner"] != null && styleData["appBarBanner"].startsWith("http")) {
       return CcStyler.buildWithUrls(
@@ -79,15 +79,15 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
   }
 
   Future<CcAppMenus> _getMenus() async {
-    if (configSource.requiresInternet) {
+    if (configSource!.requiresInternet) {
       // if we need internet, just cache the data for later use
-      final json = await data.getDBData("menus", configSource);
+      final json = await (data!.getDBData("menus", configSource!) as Future<Map<dynamic, dynamic>>);
 
-      return CcAppMenus.createFromJson(data.parseMenus(json));
+      return CcAppMenus.createFromJson(data!.parseMenus(json));
     } else {
       // otherwise, just get it from the local source
-      final json = await configSource.loadData("menus");
-      return CcAppMenus.createFromJson(data.parseMenus(json));
+      final json = await configSource!.loadData("menus");
+      return CcAppMenus.createFromJson(data!.parseMenus(json));
     }
   }
 
@@ -98,8 +98,8 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
       database = DBCache(widget.appConfig.appName, widget.appConfig.cacheRefresh * 60);
 
       data ??= CcData(database);
-      dataSource ??= GetDataSource.getDataSource(widget.appConfig.dataSource);
-      configSource ??= GetDataSource.getDataSource(widget.appConfig.configSource);
+      dataSource ??= GetDataSource.getDataSource(widget.appConfig.dataSource!);
+      configSource ??= GetDataSource.getDataSource(widget.appConfig.configSource!);
 
       final List<Future> appData = [
         _getMenus().then((value) => menus = value),
@@ -119,17 +119,17 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
         child: MaterialApp(
           theme: ThemeData(
             appBarTheme: AppBarTheme(brightness: Brightness.dark),
-            primaryColor: style.primaryColor,
-            accentColor: style.accentColor,
+            primaryColor: style!.primaryColor,
+            accentColor: style!.accentColor,
           ),
-          title: widget.appConfig.appName,
+          title: widget.appConfig.appName!,
           home: BuilderWidget(),
         ),
         styler: style,
-        appId: widget.appConfig.appName,
+        appId: widget.appConfig.appName!,
         configSource: configSource,
-        dataSource: dataSource,
-        database: database,
+        dataSource: dataSource!,
+        database: database!,
         homeScreen: homeScreen,
         menus: menus,
         appData: widget.appConfig.appData,

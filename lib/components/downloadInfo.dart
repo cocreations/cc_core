@@ -26,9 +26,9 @@ class DownloadInfo extends StatefulWidget {
 
   /// Percentage is between 0 and 1.
   final Stream<double> stream;
-  final File leadingImage;
-  final String name;
-  final void Function() onChange;
+  final File? leadingImage;
+  final String? name;
+  final void Function()? onChange;
   final void Function() dataCallback;
   final bool showOnComplete;
   final bool showOn0Percent;
@@ -38,7 +38,7 @@ class DownloadInfo extends StatefulWidget {
   /// but it could also say "UPDATING", or "FARTING" if you want to get fired
   final String percentageText;
 
-  final Color overrideColour;
+  final Color? overrideColour;
 
   @override
   _DownloadInfoState createState() => _DownloadInfoState();
@@ -48,9 +48,9 @@ class _DownloadInfoState extends State<DownloadInfo> {
   double progress = 0;
   double textOpacity = 1;
 
-  Color barColour;
+  Color? barColour;
 
-  StreamSubscription<double> _streamSubscription;
+  late StreamSubscription<double> _streamSubscription;
 
   bool shouldShow() => ((widget.showOnComplete || progress < 1) && (widget.showOn0Percent || progress > 0));
 
@@ -58,7 +58,7 @@ class _DownloadInfoState extends State<DownloadInfo> {
     if (mounted) setState(() => textOpacity = textOpacity == 1 ? 0.6 : 1);
   }
 
-  double calculateValue() {
+  double? calculateValue() {
     if (progress == null || (progress.isInfinite || progress.isNaN) || progress > 0) {
       return null;
     }
@@ -76,7 +76,7 @@ class _DownloadInfoState extends State<DownloadInfo> {
           progress = event;
         });
         if (widget.onChange != null) {
-          widget.onChange();
+          widget.onChange!();
         }
       }
     });
@@ -100,7 +100,7 @@ class _DownloadInfoState extends State<DownloadInfo> {
       if (widget.overrideColour != null) {
         barColour = widget.overrideColour;
       } else {
-        barColour = CcApp.of(context).styler.accentColor;
+        barColour = CcApp.of(context)!.styler!.accentColor;
       }
     }
 
@@ -108,8 +108,8 @@ class _DownloadInfoState extends State<DownloadInfo> {
       return Container(
         height: 15,
         child: LinearProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(barColour),
-          backgroundColor: barColour.withOpacity(0.4),
+          valueColor: AlwaysStoppedAnimation<Color?>(barColour),
+          backgroundColor: barColour!.withOpacity(0.4),
           value: calculateValue(),
         ),
       );
@@ -121,7 +121,7 @@ class _DownloadInfoState extends State<DownloadInfo> {
         height: 60,
         child: Row(
           children: [
-            widget.leadingImage != null ? Image.file(widget.leadingImage) : Container(),
+            widget.leadingImage != null ? Image.file(widget.leadingImage!) : Container(),
             Expanded(
               child: Stack(
                 children: [
@@ -139,7 +139,7 @@ class _DownloadInfoState extends State<DownloadInfo> {
                       children: [
                         widget.name != null
                             ? Text(
-                                widget.name,
+                                widget.name!,
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500,
@@ -169,7 +169,7 @@ class _DownloadInfoState extends State<DownloadInfo> {
     } else {
       return Container(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(barColour),
+          valueColor: AlwaysStoppedAnimation<Color?>(barColour),
           value: calculateValue(),
         ),
       );

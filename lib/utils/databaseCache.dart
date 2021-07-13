@@ -24,16 +24,16 @@ import 'package:cc_core/config/appConfig.dart';
 /// creates an instance of a database with [dbName] being the name of the database file
 class DBCache {
   // if this is set to a standard database object it'll brake because it needs time to open
-  Future<Database> database;
+  Future<Database>? database;
 
   /// [dbName] is the file name of the db
-  final String dbName;
+  final String? dbName;
 
   /// In seconds.
   final int expireAfter;
 
   /// this is only for testing DO NOT USE IN PRODUCTION
-  final Directory testingDir;
+  final Directory? testingDir;
   // final String appName = ConfigData.appName;
 
   DBCache(this.dbName, this.expireAfter, {this.testingDir}) {
@@ -41,25 +41,25 @@ class DBCache {
   }
 
   // finds and opens the database
-  Future<Database> _openDBCache(String dbName) async {
-    Directory directory;
+  Future<Database> _openDBCache(String? dbName) async {
+    Directory? directory;
 
     if (testingDir == null) {
       directory = await getApplicationDocumentsDirectory();
     } else {
       directory = testingDir;
     }
-    String path = join(directory.path, "databases/", "$dbName.db");
+    String path = join(directory!.path, "databases/", "$dbName.db");
     Database db = await openDatabase(path);
     return db;
   }
 
   // makes sure the table exists before trying to read from or write to it
   // returns false if there is an error or something goes wrong
-  Future<bool> _checkTable(String table) async {
+  Future<bool> _checkTable(String? table) async {
     if (database != null) {
       try {
-        await database.then((db) {
+        await database!.then((db) {
           db.execute(
             "CREATE TABLE IF NOT EXISTS $table ("
             "dataId TEXT PRIMARY KEY,"
@@ -84,7 +84,7 @@ class DBCache {
   /// returns true if it succeeds
   Future<bool> batchSave(
     /// the database table to use
-    String dataTable,
+    String? dataTable,
 
     /// the data to add
     ///
@@ -95,7 +95,7 @@ class DBCache {
   ) async {
     return _checkTable(dataTable).then((succeeded) async {
       if (succeeded) {
-        await database.then((db) async {
+        await database!.then((db) async {
           Batch batch = db.batch();
 
           data.forEach((k, v) {
@@ -113,7 +113,7 @@ class DBCache {
   Future<bool> clearTable(String table) async {
     return _checkTable(table).then((succeeded) async {
       if (succeeded) {
-        int val = await database.then((db) {
+        int val = await database!.then((db) {
           return db.delete(table, where: "1");
         });
         print(val);
@@ -126,14 +126,14 @@ class DBCache {
   }
 
   /// query the db for a single db entry
-  Future<Map<String, dynamic>> loadSingleEntry(
+  Future<Map<String, dynamic>?> loadSingleEntry(
     /// the id of the row
     String id,
     String dataTable,
   ) {
     return _checkTable(dataTable).then((succeeded) async {
       if (succeeded) {
-        List<Map<String, dynamic>> returnData = await database.then((db) {
+        List<Map<String, dynamic>> returnData = await database!.then((db) {
           return db.query(dataTable, where: "dataId='$id'");
         });
         if (returnData == null || returnData.isEmpty) {
@@ -148,7 +148,7 @@ class DBCache {
   }
 
   /// query the db with a filter
-  Future<List<Map<String, dynamic>>> getWhere(
+  Future<List<Map<String, dynamic>>?> getWhere(
     /// the filter
     String dataTable,
     List<DataFilter> filters,
@@ -170,7 +170,7 @@ class DBCache {
           }
         });
 
-        List<Map<String, dynamic>> returnData = await database.then((db) async {
+        List<Map<String, dynamic>> returnData = await database!.then((db) async {
           return List<Map<String, dynamic>>.from(await db.query(dataTable, where: '${jsonDBFilters.join(" AND ")}'));
         });
 
@@ -215,11 +215,11 @@ class DBCache {
   }
 
   /// loads whatever is in the [dataTable]
-  Future<List<Map<String, dynamic>>> loadFromCache(String dataTable) async {
+  Future<List<Map<String, dynamic>>> loadFromCache(String? dataTable) async {
     return _checkTable(dataTable).then((succeeded) async {
       if (succeeded) {
-        List<Map<String, dynamic>> returnData = await database.then((db) {
-          return db.query(dataTable);
+        List<Map<String, dynamic>> returnData = await database!.then((db) {
+          return db.query(dataTable!);
         });
         return returnData;
       } else {
@@ -242,7 +242,7 @@ class DBCache {
   ) async {
     return _checkTable(dataTable).then((succeeded) async {
       if (succeeded) {
-        int result = await database.then((db) async {
+        int result = await database!.then((db) async {
           return db.rawInsert("INSERT OR REPLACE INTO $dataTable(dataId, dataJson, lastUpdated) VALUES (?,?,?)", [dataId.toString(), dataJson.toString(), (DateTime.now().toUtc().millisecondsSinceEpoch / 1000).floor()]);
         });
         return result;

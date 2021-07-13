@@ -60,13 +60,13 @@ const MONTHS = {
 ///
 /// This class handles all data related things throughout the app/s
 class CcData {
-  final DBCache database;
+  final DBCache? database;
 
   /// In seconds
   ///
   /// By default CcData will use the databases expiry as its expiry time.
   /// But if you need to override this for whatever reason, you can do so here.
-  final int expireAfterOverride;
+  final int? expireAfterOverride;
 
   /// If true, the object can expire.
   ///
@@ -78,7 +78,7 @@ class CcData {
   ///
   /// if the url does not have a file extension, an empty string will be returned
   static String getExtension(String url) {
-    final Uri uri = Uri.tryParse(url);
+    final Uri? uri = Uri.tryParse(url);
 
     if (uri == null) {
       return "";
@@ -145,26 +145,26 @@ class CcData {
   }
 
   /// Amazon uses RFC822 time in their timestamps, so I found this converter on [stack overflow](https://stackoverflow.com/a/62310160/8112258)
-  DateTime _parseRfc822(String input) {
+  DateTime? _parseRfc822(String input) {
     var splits = input.split(' ');
     if (splits[5] == "GMT") {
       splits[5] = "Z";
     } else {
       splits[5] = " " + splits[5];
     }
-    var reformatted = splits[3] + '-' + MONTHS[splits[2]] + '-' + (splits[1].length == 1 ? '0' + splits[1] : splits[1]) + ' ' + splits[4] + splits[5];
+    var reformatted = splits[3] + '-' + MONTHS[splits[2]]! + '-' + (splits[1].length == 1 ? '0' + splits[1] : splits[1]) + ' ' + splits[4] + splits[5];
     return DateTime.tryParse(reformatted);
   }
 
   /// Gets data from the database or server backend if the db doesn't have it
-  Future<Map> getDBData(String table, CcDataConnection dataConnection) async {
-    Map data;
+  Future<Map?> getDBData(String? table, CcDataConnection dataConnection) async {
+    Map? data;
 
     bool isConnected = dataConnection.requiresInternet ? await hasInternet() : true;
 
-    Map<String, String> readyData() {
-      Map<String, String> saveReadyMap = Map();
-      data.forEach((typeKey, typeVal) {
+    Map<String, String?> readyData() {
+      Map<String, String?> saveReadyMap = Map();
+      data!.forEach((typeKey, typeVal) {
         saveReadyMap.addAll({typeVal["dataId"].toString(): typeVal["dataJson"]});
       });
       return saveReadyMap;
@@ -173,7 +173,7 @@ class CcData {
     // grab the cache
     List cachedData;
     try {
-      cachedData = await database.loadFromCache(table);
+      cachedData = await database!.loadFromCache(table);
     } catch (e) {
       print(e);
       throw (e);
@@ -185,20 +185,20 @@ class CcData {
       // just return the object
       if (!canExpire) return cachedData.asMap();
 
-      double oldestElement = double.maxFinite;
+      double? oldestElement = double.maxFinite;
       // get the lowest "lastUpdated" number, meaning the oldest cache
       cachedData.forEach((element) {
-        if (element["lastUpdated"] != null && oldestElement > element["lastUpdated"]) oldestElement = element["lastUpdated"].toDouble();
+        if (element["lastUpdated"] != null && oldestElement! > element["lastUpdated"]) oldestElement = element["lastUpdated"].toDouble();
       });
-      DateTime lastTime = DateTime.fromMillisecondsSinceEpoch((oldestElement * 1000).floor(), isUtc: true);
+      DateTime lastTime = DateTime.fromMillisecondsSinceEpoch((oldestElement! * 1000).floor(), isUtc: true);
 
       // if the oldest cache plus the expireAfter is older than the current time
       // then refresh the cache if we can
-      if (lastTime.add(Duration(seconds: database.expireAfter)).isBefore(DateTime.now().toUtc())) {
+      if (lastTime.add(Duration(seconds: database!.expireAfter)).isBefore(DateTime.now().toUtc())) {
         if (isConnected || !dataConnection.requiresInternet) {
-          data = await dataConnection.loadData(table);
+          data = await (dataConnection.loadData(table) as FutureOr<Map<dynamic, dynamic>?>);
 
-          database.batchSave(table, readyData());
+          database!.batchSave(table, readyData());
 
           return data;
         } else {
@@ -208,9 +208,9 @@ class CcData {
         return cachedData.asMap();
       }
     } else if (isConnected || !dataConnection.requiresInternet) {
-      data = await dataConnection.loadData(table);
+      data = await (dataConnection.loadData(table) as FutureOr<Map<dynamic, dynamic>?>);
 
-      database.batchSave(table, readyData());
+      database!.batchSave(table, readyData());
 
       return data;
     } else {
@@ -219,30 +219,30 @@ class CcData {
   }
 
   /// Same as [getDBData] with the an added filter.
-  Future<Map> getDBDataWhere(
+  Future<Map?> getDBDataWhere(
     String table,
-    CcDataConnection dataConnection,
+    CcDataConnection? dataConnection,
     List<DataFilter> filters, {
 
     /// Whether or not you want to save the filtered data that is obtained from the dataConnection to the cache.
     bool cacheFromDataConnection = true,
   }) async {
-    Map data;
+    Map? data;
 
     bool isConnected = await hasInternet();
 
-    Map<String, String> readyData() {
-      Map<String, String> saveReadyMap = Map();
-      data.forEach((typeKey, typeVal) {
+    Map<String, String?> readyData() {
+      Map<String, String?> saveReadyMap = Map();
+      data!.forEach((typeKey, typeVal) {
         saveReadyMap.addAll({typeVal["dataId"].toString(): typeVal["dataJson"]});
       });
       return saveReadyMap;
     }
 
     // grab the cache
-    List cachedData;
+    List? cachedData;
     try {
-      cachedData = await database.getWhere(table, filters);
+      cachedData = await database!.getWhere(table, filters);
     } catch (e) {
       print(e);
     }
@@ -251,20 +251,20 @@ class CcData {
     if (cachedData != null && cachedData.isNotEmpty) {
       if (!canExpire) return cachedData.asMap();
 
-      double oldestElement = double.maxFinite;
+      double? oldestElement = double.maxFinite;
       // get the lowest "lastUpdated" number, meaning the oldest cache
       cachedData.forEach((element) {
-        if (element["lastUpdated"] != null && oldestElement > element["lastUpdated"]) oldestElement = element["lastUpdated"];
+        if (element["lastUpdated"] != null && oldestElement! > element["lastUpdated"]) oldestElement = element["lastUpdated"];
       });
-      DateTime lastTime = DateTime.fromMillisecondsSinceEpoch((oldestElement * 1000).floor(), isUtc: true);
+      DateTime lastTime = DateTime.fromMillisecondsSinceEpoch((oldestElement! * 1000).floor(), isUtc: true);
 
       // if the oldest cache plus the expireAfter is older than the current time
       // then refresh the cache if we can
-      if (lastTime.add(Duration(seconds: database.expireAfter)).isBefore(DateTime.now().toUtc())) {
-        if (isConnected || !dataConnection.requiresInternet) {
-          data = await dataConnection.getWhere(table, filters);
+      if (lastTime.add(Duration(seconds: database!.expireAfter)).isBefore(DateTime.now().toUtc())) {
+        if (isConnected || !dataConnection!.requiresInternet) {
+          data = await (dataConnection!.getWhere(table, filters) as FutureOr<Map<dynamic, dynamic>?>);
 
-          database.batchSave(table, readyData());
+          database!.batchSave(table, readyData());
 
           return data;
         } else {
@@ -273,10 +273,10 @@ class CcData {
       } else {
         return cachedData.asMap();
       }
-    } else if (isConnected || !dataConnection.requiresInternet) {
-      data = await dataConnection.getWhere(table, filters);
+    } else if (isConnected || !dataConnection!.requiresInternet) {
+      data = await (dataConnection!.getWhere(table, filters) as FutureOr<Map<dynamic, dynamic>?>);
 
-      database.batchSave(table, readyData());
+      database!.batchSave(table, readyData());
 
       return data;
     } else {
@@ -285,10 +285,10 @@ class CcData {
   }
 
   /// You need a file? We got a file!
-  Future<File> getFile(
+  Future<File?> getFile(
     /// The web url of the file to fetch.
     /// We use a hashed version of the url for the filename so thats why its not specified.
-    String url,
+    String? url,
 
     /// This is not the file name but the directory its stored in.
     /// The file name is a hash of the url.
@@ -302,7 +302,7 @@ class CcData {
     bool updateFileInBackground = true,
 
     /// This will be called if there is an error getting the file
-    void Function(Error) onFileError,
+    void Function(Error)? onFileError,
   }) async {
     String sanitizedDir = sanitizeName(dir);
 
@@ -326,7 +326,7 @@ class CcData {
 
       if (checkFileForModifications) {
         if (await hasInternet()) {
-          String lastMod;
+          String? lastMod;
 
           // this looks really ugly but we need to await quite a few things
           localFileUpdatedDTS = await (await fileCache.retrieveFile(sanitizedDir, fileName)).lastModified();
@@ -394,10 +394,10 @@ class CcData {
   }
 
   /// You need files? We got files!
-  Future<List<File>> getFiles(
+  Future<List<File?>?> getFiles(
     /// The web urls of the files to fetch.
     /// We use a hashed version of the urls for the filenames so thats why its not specified.
-    List<String> urls,
+    List<String?> urls,
 
     /// This is not the file name but the directory its stored in.
     String dir,
@@ -406,7 +406,7 @@ class CcData {
     BuildContext context, {
 
     /// A callback that gives you the percentage (double) and a completion status (bool), and the Files (List<File>) when they're done
-    void Function(double, bool, List<File>) callback,
+    void Function(double, bool, List<File?>?)? callback,
 
     /// Will skip over 404 errors
     bool skip404 = false,
@@ -423,16 +423,16 @@ class CcData {
 
     /// This will be called if there is an error getting a certain file
 
-    void Function(Error) onFileError,
+    void Function(Error)? onFileError,
   }) async {
     String sanitizedDir = sanitizeName(dir);
     FileCache fileCache = FileCache();
     List<String> fileNames = [];
     List<String> fileNamesDownloaded = [];
     List<String> fileNamesNotDownloaded = [];
-    List<String> urlsNotDownloaded = [];
-    List<String> urlsDownloaded = []; // used for checking HEAD
-    List<File> files = List<File>.filled(urls.length, null);
+    List<String?> urlsNotDownloaded = [];
+    List<String?> urlsDownloaded = []; // used for checking HEAD
+    List<File?> files = List<File?>.filled(urls.length, null);
     List<int> d = [];
     List<int> nd = [];
     double notDownloadedPer = 0;
@@ -440,7 +440,7 @@ class CcData {
 
     bool isConnected = await hasInternet();
 
-    void fileCallback(List<File> f) {
+    void fileCallback(List<File?>? f) {
       if (callback != null) {
         var per = ((((notDownloadedPer / 100) * fileNamesNotDownloaded.length) + ((downloadedPer / 100) * fileNamesDownloaded.length)) / files.length) * 100;
         var comp = false;
@@ -451,7 +451,7 @@ class CcData {
       }
     }
 
-    void downloadCallback(double per, bool comp, List<File> files) {
+    void downloadCallback(double per, bool comp, List<File?>? files) {
       notDownloadedPer = per;
       fileCallback(null);
     }
@@ -460,7 +460,7 @@ class CcData {
     // dude you mentioned that like 3 times now, WE GET IT, YOU USE A HASH FOR THE FILE NAMES!
     for (var i = 0; i < urls.length; i++) {
       if (urls[i] != null) {
-        fileNames.add("${sha1.convert(utf8.encode(urls[i])).toString()}${getExtension(urls[i])}");
+        fileNames.add("${sha1.convert(utf8.encode(urls[i]!)).toString()}${getExtension(urls[i]!)}");
       }
     }
 
@@ -480,8 +480,8 @@ class CcData {
         urlsNotDownloaded.add(urls[i]);
       }
     }
-    List<File> downloaded = [];
-    List<File> notDownloaded = [];
+    List<File?> downloaded = [];
+    List<File?> notDownloaded = [];
     if (fileNamesDownloaded.length > 0) {
       // We need to get the files first to avoid unnecessarily calling retrieveFiles twice
       downloaded.addAll(await fileCache.retrieveFiles(sanitizedDir, fileNamesDownloaded));
@@ -491,20 +491,20 @@ class CcData {
         // but it's all in the name of efficiency
         if (checkFileForModifications) {
           List<Future<http.Response>> futureResponses = [];
-          List<String> lastModsHead = []; // this is the server HEAD
+          List<String?> lastModsHead = []; // this is the server HEAD
           List<DateTime> lastModsLocal = []; // and this is for the local file
-          List<String> urlsToUpdate = [];
+          List<String?> urlsToUpdate = [];
           List<String> namesToUpdate = [];
           // need to keep track of the position in the download list incase the user doesn't want to do it in the background
           List<int> indexInDownloadedList = [];
 
           downloaded.forEach((file) async {
-            lastModsLocal.add(await file.lastModified());
+            lastModsLocal.add(await file!.lastModified());
           });
 
           try {
             urlsDownloaded.forEach((url) {
-              futureResponses.add(http.head(Uri.parse(url)).catchError((e) {
+              futureResponses.add(http.head(Uri.parse(url!)).catchError((e) {
                 print("Future error handling is the worst! $e");
               }));
             });
@@ -529,12 +529,12 @@ class CcData {
               DateTime remoteFileUpdatedDTS;
               if (lastModsHead[i] != null) {
                 try {
-                  remoteFileUpdatedDTS = DateTime.parse(lastModsHead[i]);
+                  remoteFileUpdatedDTS = DateTime.parse(lastModsHead[i]!);
                 } catch (FormatException) {
                   // maybe it's formatted differently to what standard parse expects,
                   // like this instead ? : 'Tue, 23 Feb 2021 00:17:59 GMT'
                   // remoteFileUpdatedDTS ??= _parseRfc822(lastModsHead[i]);
-                  remoteFileUpdatedDTS = DateFormat("EEE, d MMM yyyy hh:mm:ss 'GMT'").parse(lastModsHead[i], true);
+                  remoteFileUpdatedDTS = DateFormat("EEE, d MMM yyyy hh:mm:ss 'GMT'").parse(lastModsHead[i]!, true);
                   // if not then the exception will happen anyway ..
                 }
 
@@ -666,9 +666,9 @@ class CcData {
         throw ("ERROR \"type\" could not be found in $v");
       }
       if (v["type"] == "leftSide") {
-        menus["leftSide"].add(v);
+        menus["leftSide"]!.add(v);
       } else if (v["type"] == "bottom") {
-        menus["bottom"].add(v);
+        menus["bottom"]!.add(v);
       } else if (v["type"] == "homeScreen") {
         menus["homeScreen"] = [v];
       } else if (v["type"] == "intro") {
@@ -681,8 +681,8 @@ class CcData {
   }
 
   /// takes the data from the db and converts it to a map the ccStyler can understand
-  Map<String, String> parseStyle(Map data) {
-    Map<String, String> style = {};
+  Map<String, String?> parseStyle(Map data) {
+    Map<String, String?> style = {};
     data.forEach((k, v) {
       v = jsonDecode(v["dataJson"]);
       style['${v["name"]}'] = v["value"];

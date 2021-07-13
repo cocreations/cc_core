@@ -14,13 +14,13 @@ class ScrollableTransition extends StatefulWidget {
   });
 
   /// The sliver that sits at the bottom of the page
-  final Widget sliver;
+  final Widget? sliver;
 
   /// The page that is opened when you swipe up on the sliver
-  final Widget page;
+  final Widget? page;
 
   /// The widget to display behind the page
-  final Widget background;
+  final Widget? background;
 
   /// The height of the sliver
   final double sliverHeight;
@@ -31,10 +31,10 @@ class ScrollableTransition extends StatefulWidget {
   /// The color that is overlaid while the transition is in progress
   final Color fadeColor;
 
-  final ScrollableTransitionController controller;
+  final ScrollableTransitionController? controller;
 
   /// Called when the transition is complete
-  final void Function() onTransitionComplete;
+  final void Function()? onTransitionComplete;
 
   /// Offset the max height
   ///
@@ -50,15 +50,15 @@ class ScrollableTransition extends StatefulWidget {
 // maybe add cool "fling" thing (if the user is swiping fast it will keep moving)
 // add a "open" and "closed" child (openChild and sliverChild idk)
 class _ScrollableTransitionState extends State<ScrollableTransition> with SingleTickerProviderStateMixin {
-  double height;
-  double maxHeight;
+  late double height;
+  late double maxHeight;
 
   Duration _duration = Duration.zero;
 
-  ScrollableTransitionController _controller;
+  ScrollableTransitionController? _controller;
 
   double overlayOpacity() {
-    if (_controller.isOpen) {
+    if (_controller!.isOpen) {
       return ((maxHeight - height) / 100).clamp(0.0, 1.0);
     }
     return ((height - widget.sliverHeight) / 100).clamp(0.0, 1.0);
@@ -68,7 +68,7 @@ class _ScrollableTransitionState extends State<ScrollableTransition> with Single
     _duration = Duration(milliseconds: 350);
     setState(() {
       height = maxHeight;
-      _controller._isOpen = true;
+      _controller!._isOpen = true;
     });
   }
 
@@ -76,7 +76,7 @@ class _ScrollableTransitionState extends State<ScrollableTransition> with Single
     _duration = Duration(milliseconds: 250);
     setState(() {
       height = widget.sliverHeight;
-      _controller._isOpen = false;
+      _controller!._isOpen = false;
     });
   }
 
@@ -88,25 +88,25 @@ class _ScrollableTransitionState extends State<ScrollableTransition> with Single
     } else {
       _controller = ScrollableTransitionController();
     }
-    _controller.attachScrollableTransition(animateOpen, animateClose);
+    _controller!.attachScrollableTransition(animateOpen, animateClose);
     super.initState();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    maxHeight ??= (MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top) - widget.maxHeightOffset;
+    maxHeight = (MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top) - widget.maxHeightOffset;
 
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        widget.background,
+        widget.background!,
         GestureDetector(
           child: AnimatedContainer(
             duration: _duration,
@@ -114,7 +114,7 @@ class _ScrollableTransitionState extends State<ScrollableTransition> with Single
             curve: Curves.easeOutQuint,
             child: ColorFiltered(
               colorFilter: ColorFilter.mode(widget.fadeColor.withOpacity(overlayOpacity()), BlendMode.srcOver),
-              child: _controller.isOpen ? Wrap(children: [widget.page]) : widget.sliver,
+              child: _controller!.isOpen ? Wrap(children: [widget.page!]) : widget.sliver,
             ),
             onEnd: widget.onTransitionComplete,
           ),
@@ -124,9 +124,9 @@ class _ScrollableTransitionState extends State<ScrollableTransition> with Single
             });
           },
           onVerticalDragEnd: (details) {
-            if (details.primaryVelocity > 1) {
+            if (details.primaryVelocity! > 1) {
               animateClose();
-            } else if (details.primaryVelocity < -1) {
+            } else if (details.primaryVelocity! < -1) {
               animateOpen();
             } else {
               if ((maxHeight / 2) > height) {
@@ -155,8 +155,8 @@ class _ScrollableTransitionState extends State<ScrollableTransition> with Single
 
 class ScrollableTransitionController {
   // I don't know how to make controllers so please make this better in future versions
-  void Function() _open;
-  void Function() _close;
+  void Function()? _open;
+  void Function()? _close;
 
   bool _isOpen = false;
 
@@ -172,7 +172,7 @@ class ScrollableTransitionController {
     _close = null;
   }
 
-  void open() => _open();
+  void open() => _open!();
 
-  void close() => _close();
+  void close() => _close!();
 }

@@ -13,7 +13,7 @@ class Errors {
   /// Takes a list of Errors and displays them as a popup
   ///
   /// get the list of errors from [buildErrors]
-  Future<void> displayErrorsPopup(BuildContext context, {void Function() onClose, void Function() onRetry}) async {
+  Future<void> displayErrorsPopup(BuildContext context, {void Function()? onClose, void Function()? onRetry}) async {
     try {
       return showDialog(
         context: context,
@@ -74,7 +74,7 @@ class PrettyError extends StatelessWidget {
   /// the aforementioned description
   final String description;
 
-  Future<void> displayErrorPopup(BuildContext context, {void Function() onClose, void Function() onRetry}) async {
+  Future<void> displayErrorPopup(BuildContext context, {void Function()? onClose, void Function()? onRetry}) async {
     try {
       return showDialog(
         context: context,
@@ -124,7 +124,7 @@ class PrettyError extends StatelessWidget {
 
   @override
   String toString({
-    TextTreeConfiguration parentConfiguration,
+    TextTreeConfiguration? parentConfiguration,
     DiagnosticLevel minLevel = DiagnosticLevel.info,
   }) {
     String errorInfo = ErrorsList.getErrorInfo(code, description);
@@ -175,9 +175,9 @@ class Error extends StatelessWidget {
 
   /// any other data that needed to be included like... well I don't actually know.
   /// You'll know when the time comes to use it.
-  final String data;
+  final String? data;
 
-  PrettyError toPrettyError([String description]) {
+  PrettyError toPrettyError([String? description]) {
     if (description != null) {
       return PrettyError(code, description);
     }
@@ -186,7 +186,7 @@ class Error extends StatelessWidget {
 
   @override
   String toString({
-    TextTreeConfiguration parentConfiguration,
+    TextTreeConfiguration? parentConfiguration,
     DiagnosticLevel minLevel = DiagnosticLevel.info,
   }) {
     String errorInfo = ErrorsList.getErrorInfo(code, property);

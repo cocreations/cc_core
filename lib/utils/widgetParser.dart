@@ -11,8 +11,8 @@ import 'package:cc_core/screens/settingsScreen/settingsScreen.dart';
 
 class WidgetParser extends StatelessWidget {
   WidgetParser(this.widget, this.arg);
-  final String widget;
-  final String arg;
+  final String? widget;
+  final String? arg;
   @override
   Widget build(BuildContext context) {
     switch (widget) {
@@ -21,7 +21,7 @@ class WidgetParser extends StatelessWidget {
       case "EmptyImageScreen":
         return EmptyImageScreen(url: arg);
       case "TextScreen":
-        return TextScreen(string: arg);
+        return TextScreen(string: arg!);
       case "MapScreen":
         return MapScreen(mbTilesUrl: arg);
       case "ListViewScreen":
@@ -37,8 +37,8 @@ class WidgetParser extends StatelessWidget {
       case "SwipeableIntroScreen":
         return SwipeScreen(arg);
       default:
-        if (CcApp.of(context).parserModules != null) {
-          var returnWidget = CcApp.of(context).parserModules.parse(widget, arg);
+        if (CcApp.of(context)!.parserModules != null) {
+          var returnWidget = CcApp.of(context)!.parserModules!.parse(widget, arg);
           if (returnWidget != null) {
             return returnWidget;
           }

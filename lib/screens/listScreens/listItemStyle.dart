@@ -14,7 +14,7 @@ class ListItemStyle {
   final bool screenOnListItem;
   final Color cardColor;
 
-  static ListItemStyle parseStyle(String style) {
+  static ListItemStyle parseStyle(String? style) {
     if (style == null || style.isEmpty) return ListItemStyle();
 
     List<String> kvs = style.split(",");
@@ -29,11 +29,11 @@ class ListItemStyle {
     });
 
     return ListItemStyle(
-      cornerRadius: map["cornerRadius"] != null ? double.parse(map["cornerRadius"]) : 4,
-      elevation: map["elevation"] != null ? double.parse(map["elevation"]) : 1,
-      imageSize: map["imageSize"] != null ? double.parse(map["imageSize"]) : 70,
+      cornerRadius: map["cornerRadius"] != null ? double.parse(map["cornerRadius"]!) : 4,
+      elevation: map["elevation"] != null ? double.parse(map["elevation"]!) : 1,
+      imageSize: map["imageSize"] != null ? double.parse(map["imageSize"]!) : 70,
       screenOnListItem: map["screenOnListItem"] == "true",
-      cardColor: map["cardColor"] != null ? Color(int.parse(map["cardColor"])) : Colors.white,
+      cardColor: map["cardColor"] != null ? Color(int.parse(map["cardColor"]!)) : Colors.white,
     );
   }
 }

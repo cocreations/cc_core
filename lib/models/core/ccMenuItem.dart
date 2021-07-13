@@ -11,7 +11,7 @@ class CcMenuItem {
   final String id;
   final String title;
   final CcAppScreen screen;
-  final Icon icon;
+  final Icon? icon;
 
   /// optional
 
@@ -20,9 +20,9 @@ class CcMenuItem {
   /// Pass in the screen identifier as a string (must correspond to a screen defined in the widgetParser)
   /// An optional parameter can also be sent to the widget screen
   CcMenuItem({
-    @required this.id,
-    @required this.title,
-    @required this.screen,
+    required this.id,
+    required this.title,
+    required this.screen,
     this.icon,
   });
 
@@ -38,9 +38,9 @@ class CcMenuItem {
   //TODO: make this static and throw if id, title, or screen is null
   static CcMenuItem createFromJson(Map json) {
     String id = json["id"].toString();
-    String title = json["name"].toString() ?? null;
+    String title = json["name"].toString();
     CcAppScreen screen = CcAppScreen.createFromJson(json);
-    Icon icon;
+    Icon? icon;
     if (json["icon"] != null) {
       try {
         icon = Icon(IconData(int.parse(json["icon"]), fontFamily: "MaterialIcons"));

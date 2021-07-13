@@ -4,7 +4,7 @@ import 'package:flutter_html/style.dart';
 
 class TextScreen extends StatefulWidget {
   TextScreen({this.string});
-  final String string;
+  final String? string;
   @override
   _TextScreenState createState() => _TextScreenState();
 }
