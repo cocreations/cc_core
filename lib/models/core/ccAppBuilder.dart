@@ -33,10 +33,8 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
     switch (string) {
       case "appBarBannerAtTop":
         return DrawerType.appBarBannerAtTop;
-        break;
       case "compendiumStyle":
         return DrawerType.compendiumStyle;
-        break;
       case "standard":
         return DrawerType.standard;
       default:
@@ -45,7 +43,9 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
   }
 
   Future<CcStyler> _getStyle() async {
-    var styleData = await (data!.getDBData("style", configSource!) as Future<Map<dynamic, dynamic>>);
+    var styleData = await data!.getDBData("style", configSource!);
+
+    if (styleData == null) return CcStyler();
 
     styleData = data!.parseStyle(styleData);
 
@@ -81,9 +81,9 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
   Future<CcAppMenus> _getMenus() async {
     if (configSource!.requiresInternet) {
       // if we need internet, just cache the data for later use
-      final json = await (data!.getDBData("menus", configSource!) as Future<Map<dynamic, dynamic>>);
+      final json = await data!.getDBData("menus", configSource!);
 
-      return CcAppMenus.createFromJson(data!.parseMenus(json));
+      return CcAppMenus.createFromJson(data!.parseMenus(json ?? {}));
     } else {
       // otherwise, just get it from the local source
       final json = await configSource!.loadData("menus");

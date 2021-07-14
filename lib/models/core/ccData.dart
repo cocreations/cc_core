@@ -35,6 +35,32 @@ class DataFilter {
 
   DataFilter(this.field, this.op, this.value);
 
+  /// Takes something like this:
+  ///
+  /// ```dart
+  ///   {
+  ///   "field": "fieldName",
+  ///   "op": "equals",
+  ///   "value": "value",
+  ///   }
+  /// ```
+  static DataFilter parseMap(Map filter) {
+    Op op;
+
+    switch (filter["op"]) {
+      case "arrayContains":
+        op = Op.arrayContains;
+        break;
+      case "equals":
+        op = Op.equals;
+        break;
+      default:
+        op = Op.equals;
+    }
+
+    return DataFilter(filter["field"] ?? "", op, filter["value"] ?? "");
+  }
+
   @override
   String toString() {
     return "{$field $op $value}";
@@ -180,7 +206,7 @@ class CcData {
     }
 
     // if we have cache
-    if (cachedData != null && cachedData.isNotEmpty) {
+    if (cachedData.isNotEmpty) {
       // if the object cant expire
       // just return the object
       if (!canExpire) return cachedData.asMap();
@@ -196,7 +222,7 @@ class CcData {
       // then refresh the cache if we can
       if (lastTime.add(Duration(seconds: database!.expireAfter)).isBefore(DateTime.now().toUtc())) {
         if (isConnected || !dataConnection.requiresInternet) {
-          data = await (dataConnection.loadData(table) as FutureOr<Map<dynamic, dynamic>?>);
+          data = await dataConnection.loadData(table);
 
           database!.batchSave(table, readyData());
 

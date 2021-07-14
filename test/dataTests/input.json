@@ -1,0 +1,42 @@
+{
+  "0": {
+    "id": "0",
+    "category": "Songs",
+    "title": "Never Gonna Give You Up",
+    "creator": "Rick Astley",
+    "contentUrl": "https://www.songbank.com/never_gonna_give_you_up/mp3.mp3",
+    "coverArt":"https://www.songbank.com/never_gonna_give_you_up/image.jpg"
+  },
+  "1": {
+    "id": "1",
+    "category": "Songs",
+    "title": "Love Story",
+    "creator": "Taylor Swift",
+    "contentUrl": "https://www.songbank.com/love_story/mp3.mp3",
+    "coverArt":"https://www.songbank.com/love_story/image.jpg"
+  },
+  "2": {
+    "id": "2",
+    "category": "Books",
+    "title": "The Hitchhiker's Guide to the Galaxy",
+    "creator": "Douglas Adams",
+    "contentUrl": "https://www.bookbank.com/the_hitchhikers_guide_to_the_galaxy/book.pdf",
+    "coverArt":"https://www.bookbank.com/the_hitchhikers_guide_to_the_galaxy/coverart.jpg"
+  },
+  "3": {
+    "id": "3",
+    "category": "Movies",
+    "title": "Iron Man",
+    "creator": "Jon Favreau",
+    "contentUrl": "https://www.moviebank.com/iron_man/movie.mp4",
+    "coverArt":"https://www.moviebank.com/iron_man/coverart.jpg"
+  },
+  "4": {
+    "id": "4",
+    "category": "Songs",
+    "title": "Ievan Polkka",
+    "creator": "Eino Kettunen",
+    "contentUrl": "https://www.songbank.com/ievan_polkka/mp3.mp3",
+    "coverArt":"https://www.songbank.com/ievan_polkka/image.jpg"
+  }
+}

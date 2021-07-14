@@ -1,0 +1,42 @@
+{
+  "0": {
+    "id": "0",
+    "name": "Never Gonna Give You Up",
+    "tileImageUrl": "",
+    "appScreen": "SmallAudioPlayer",
+    "appScreenParam": "https://www.songbank.com/never_gonna_give_you_up/mp3.mp3,<b>Never Gonna Give You Up</b><br />Rick Astley,https://www.songbank.com/never_gonna_give_you_up/image.jpg",
+    "style": "imageSize:120,elevation:1.5,cornerRadius:25"
+  },
+  "1": {
+    "id": "1",
+    "name": "Love Story",
+    "tileImageUrl": "",
+    "appScreen": "SmallAudioPlayer",
+    "appScreenParam": "https://www.songbank.com/love_story/mp3.mp3,<b>Love Story</b><br />Taylor Swift,https://www.songbank.com/love_story/image.jpg",
+    "style": "imageSize:120,elevation:1.5,cornerRadius:25"
+  },
+  "2": {
+    "id": "2",
+    "name": "The Hitchhiker's Guide to the Galaxy",
+    "tileImageUrl": "",
+    "appScreen": "SmallAudioPlayer",
+    "appScreenParam": "https://www.bookbank.com/the_hitchhikers_guide_to_the_galaxy/book.pdf,<b>The Hitchhiker's Guide to the Galaxy</b><br />Douglas Adams,https://www.bookbank.com/the_hitchhikers_guide_to_the_galaxy/coverart.jpg",
+    "style": "imageSize:120,elevation:1.5,cornerRadius:25"
+  },
+  "3": {
+    "id": "3",
+    "name": "Iron Man",
+    "tileImageUrl": "",
+    "appScreen": "SmallAudioPlayer",
+    "appScreenParam": "https://www.moviebank.com/iron_man/movie.mp4,<b>Iron Man</b><br />Jon Favreau,https://www.moviebank.com/iron_man/coverart.jpg",
+    "style": "imageSize:120,elevation:1.5,cornerRadius:25"
+  },
+  "4": {
+    "id": "4",
+    "name": "Ievan Polkka",
+    "tileImageUrl": "",
+    "appScreen": "SmallAudioPlayer",
+    "appScreenParam": "https://www.songbank.com/ievan_polkka/mp3.mp3,<b>Ievan Polkka</b><br />Eino Kettunen,https://www.songbank.com/ievan_polkka/image.jpg",
+    "style": "imageSize:120,elevation:1.5,cornerRadius:25"
+  }
+}

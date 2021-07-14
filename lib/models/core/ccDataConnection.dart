@@ -48,21 +48,37 @@ class AirTableDataConnection extends CcDataConnection {
     http.Response response = await http.get(Uri.parse("https://api.airtable.com/v0/$baseId/$table?maxRecords=500&view=Grid%20view"), headers: {"Authorization": "Bearer $apiKey"});
 
     if (response.statusCode == 200) {
-      return standardizedAirtableData(response.body);
+      return standardizeAirtableData(response.body);
     } else {
       throw ("ERROR loading data, http error ${response.statusCode}.");
     }
   }
 
-  Future<dynamic> getWhere(String table, List<DataFilter> filter) async {
-    throw ("ERROR, getWhere is not supported in airtable yet.");
+  Future<Map<int, Map<String, String>>> getWhere(String table, List<DataFilter> filter) async {
+    List<String> stringFilters = [];
+
+    for (var f in filter) {
+      if (f.op == Op.arrayContains) {
+        stringFilters.add("IF(REGEX_MATCH(%7B${f.field}%7D%2C%20%22${f.value}%22)%2C%20TRUE()%2C%20FALSE())");
+      } else if (f.op == Op.equals) {
+        stringFilters.add("IF(%7B${f.field}%7D%20%3D%20%22${f.value}%22%2C%20TRUE()%2C%20FALSE())");
+      }
+    }
+
+    http.Response response = await http.get(Uri.parse("https://api.airtable.com/v0/$baseId/$table?maxRecords=500&view=Grid%20view&filterByFormula=AND(${stringFilters.join("%2C%20")})"), headers: {"Authorization": "Bearer $apiKey"});
+
+    if (response.statusCode == 200) {
+      return standardizeAirtableData(response.body);
+    } else {
+      throw ("ERROR loading data, http error ${response.statusCode}.");
+    }
   }
 
-  static Map<int, Map<String, String>> standardizedAirtableData(String jsonData) {
+  static Map<int, Map<String, String>> standardizeAirtableData(String jsonData) {
     Map<int, Map<String, String>> returnData = {};
     Map data = jsonDecode(jsonData);
     int i = 0;
-    // putting all the data in a standardized format
+    // putting all the data in a standardize format
     data['records'].forEach((item) {
       var id = item['fields']['id'];
       returnData.putIfAbsent(i, () => {'dataId': '$id', 'dataJson': ""});
@@ -113,7 +129,7 @@ class FirebaseDataConnection extends CcDataConnection {
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return standardizedFirebaseData(response.body);
+      return standardizeFirebaseData(response.body);
     } else {
       throw ("ERROR loading data, http error ${response.statusCode}.");
     }
@@ -146,13 +162,13 @@ class FirebaseDataConnection extends CcDataConnection {
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return standardizedFirebaseData(response.body);
+      return standardizeFirebaseData(response.body);
     } else {
       throw ("ERROR loading data, http error ${response.statusCode}.");
     }
   }
 
-  static Map<int, Map<String, String>> standardizedFirebaseData(String jsonData) {
+  static Map<int, Map<String, String>> standardizeFirebaseData(String jsonData) {
     Map<int, Map<String, String>> returnData = {};
     List data = jsonDecode(jsonData);
     int i = 0;
@@ -185,7 +201,7 @@ class FirebaseDataConnection extends CcDataConnection {
       return returnVal;
     }
 
-    // putting all the data in a standardized format
+    // putting all the data in a standardize format
     data.forEach((item) {
       if (item.isNotEmpty && item['document'] != null) {
         var id = item['document']['name'].toString().split("/").last;
@@ -246,7 +262,7 @@ class AssetDataConnection extends CcDataConnection {
 
     final ByteData data = await rootBundle.load(path);
 
-    return standardizedAssetData(utf8.decode(data.buffer.asUint8List()));
+    return standardizeAssetData(utf8.decode(data.buffer.asUint8List()));
   }
 
   Future getWhere(String assetName, List<DataFilter> filters) async {
@@ -291,11 +307,12 @@ class AssetDataConnection extends CcDataConnection {
     return returnData;
   }
 
-  static Map<int, Map<String, String>> standardizedAssetData(String jsonData) {
+  static Map<int, Map<String, String>> standardizeAssetData(String jsonData) {
     Map<int, Map<String, String>> returnData = {};
     Map data = jsonDecode(jsonData);
     int i = 0;
-    // putting all the data in a standardized format
+    // TODO: make this use an array rather than an object with id keys
+    // putting all the data in a standardize format
     data.forEach((k, v) {
       returnData.putIfAbsent(i, () => {'dataId': '$k', 'dataJson': '${jsonEncode(v)}'});
       i++;

@@ -1,0 +1,20 @@
+{
+  "songs": {
+    "table": "entertainment",
+    "filters": [
+      {
+        "field": "category",
+        "op": "equals",
+        "value": "Songs"
+      }
+    ],
+    "output": {
+      "id": "{id}",
+      "name": "{title}",
+      "tileImageUrl": "",
+      "appScreen": "SmallAudioPlayer",
+      "appScreenParam": "{contentUrl},<b>{title}</b><br />{creator},{coverArt}",
+      "style": "imageSize:120,elevation:1.5,cornerRadius:25"
+    }
+  }
+}

@@ -104,3 +104,83 @@ All the tools you need to build an app in 2 minutes.
 
   ##### id
   Must be unique.
+
+
+### Translation Layer
+  Did you decide to make your database before checking the README? Well if the answer is yes, you're in luck! We've built a solution for just this problem and it's called the Translation Layer.
+  All it needs is a small json file to understand your mess of a database.
+  
+  It's layed out like so :
+
+  ```json
+  {
+    "yourTableName": {
+      "table": "yourTableName",
+      "filters": [
+        {
+          "field": "field",
+          "op": "equals",
+          "value": "value"
+        }
+      ],
+      "output": {
+      }
+    }
+  }
+  ```
+
+  Lets break this down a bit.
+
+  * `"yourTableName"` This is the table or faux table that needs to be translated. Whenever this table is accessed in the app, it will be intercepted by the translation layer which will apply the filters and parse the result.
+  * `"table"` This is the actual table in the database the app is going to get. This means that you can have multiple "faux" tables that all just apply filters to a single giant table.
+  * `"filters"` These are the filters that will be applied when getting data from the database.
+
+    This is a list of objects that contain three keys
+    1. `"field"` This is the database column to check against.
+    2. `"op"` This is the operation to perform. Can be either 'equals' or 'arrayContains'.
+    3. `"value"` This is the value that the field should match, or the array should contain
+
+  * `"output"` This is what the end result will output. It should be structured to match whatever component is using this data. 
+  Using curly brackets ({}), you can interpolate the values from your database into the result.
+   
+  Here's an example of a translation layer set up to get songs from an entertainment table and return them in the `ListViewScreen` schema.
+
+
+  ```json
+  {
+    "songs": {
+      "table": "entertainment",
+      "filters": [
+        {
+          "field": "category",
+          "op": "equals",
+          "value": "Songs"
+        }
+      ],
+      "output": {
+        "id": "{id}",
+        "name": "{title}",
+        "tileImageUrl": "",
+        "appScreen": "SmallAudioPlayer",
+        "appScreenParam": "{contentUrl},<b>{title}</b><br />{creator},{coverArt}",
+        "style": "imageSize:120,elevation:1.5,cornerRadius:25"
+      }
+    }
+  }
+  ```
+  Here's an example of the database that this is translating:
+
+  ```json
+  {
+    "0": {
+      "id": "0",
+      "category": "Songs",
+      "title": "Never Gonna Give You Up",
+      "creator": "Rick Astley",
+      "contentUrl": "https://www.songbank.com/never_gonna_give_you_up/mp3.mp3",
+      "coverArt":"https://www.songbank.com/never_gonna_give_you_up/image.jpg"
+    }
+  }
+  ```
+  
+You can see that we're using almost all the data in the output, but it's shuffled around quite a bit.
