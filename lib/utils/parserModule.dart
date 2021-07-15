@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 ///      String get name => "text";
 ///
 ///      @override
-///      Widget buildWidget(String arg) {
+///      Widget buildWidget(String? arg) {
 ///        return Text(arg);
 ///      }
 ///    }
@@ -22,6 +22,17 @@ import 'package:flutter/material.dart';
 abstract class ParserModule {
   String get name;
   Widget buildWidget(String? arg);
+}
+
+/// NullParser is returned by ParserModules if it fails to parse the widget.
+class NullParser extends ParserModule {
+  @override
+  String get name => "null";
+
+  @override
+  Widget buildWidget(String? arg) {
+    return Text("Failed to parse.");
+  }
 }
 
 /// This can be added to the widget parser to allow your app to parse your custom app specific json.
@@ -42,8 +53,9 @@ class ParserModules {
 
   Widget parse(String? name, String? arg) {
     ParserModule module = modules.firstWhere((mod) => mod.name == name, orElse: () {
-      throw Exception("Couldn't find module $name in modules $modules");
-    } as ParserModule Function()?);
+      print(Exception("Couldn't find module $name in modules $modules"));
+      return NullParser();
+    });
 
     return module.buildWidget(arg);
   }

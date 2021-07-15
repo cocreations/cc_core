@@ -1,4 +1,5 @@
 import 'package:cc_core/models/core/ccAppBuilder.dart';
+import 'package:cc_core/models/core/ccTranslationLayer.dart';
 import 'package:cc_core/utils/parserModule.dart';
 import 'package:flutter/material.dart';
 import 'package:cc_core/builderWidget.dart';
@@ -29,6 +30,7 @@ class CcApp extends InheritedWidget {
   final CcStyler? styler;
   final CustomAppData? appData;
   final ParserModules? parserModules;
+
   /// In seconds
   final int cacheRefresh;
 
@@ -45,11 +47,7 @@ class CcApp extends InheritedWidget {
     this.appData,
     this.parserModules,
     this.cacheRefresh = 86400,
-  })  : assert(appId != null),
-        assert(dataSource != null),
-        assert(database != null),
-        assert(child != null),
-        super(key: key, child: child);
+  }) : super(key: key, child: child);
 
   // /// ### Creates a CcApp from json data
 

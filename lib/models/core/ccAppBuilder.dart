@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:cc_core/models/core/ccTranslationLayer.dart';
 import 'package:flutter/material.dart';
 import 'package:cc_core/builderWidget.dart';
 import 'package:cc_core/components/leftSideMenu.dart';
@@ -6,6 +10,7 @@ import 'package:cc_core/models/core/ccData.dart';
 import 'package:cc_core/models/core/ccDataConnection.dart';
 import 'package:cc_core/models/core/ccStyler.dart';
 import 'package:cc_core/utils/databaseCache.dart';
+import 'package:flutter/services.dart';
 import 'ccApp.dart';
 import 'ccAppMenus.dart';
 import 'ccAppScreen.dart';
@@ -94,8 +99,24 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero).then((_) {
-      database = DBCache(widget.appConfig.appName, widget.appConfig.cacheRefresh * 60);
+    Future.delayed(Duration.zero).then((_) async {
+      if (widget.appConfig.translationLayer != null) {
+        String? translationFile;
+        try {
+          translationFile = await rootBundle.loadString(widget.appConfig.translationLayer!);
+        } catch (e) {
+          print("TRANSLATION FILE NOT FOUND!!!");
+        }
+
+        if (translationFile != null) {
+          database = DBCache(
+            widget.appConfig.appName,
+            widget.appConfig.cacheRefresh * 60,
+            TranslationLayer(jsonDecode(translationFile)),
+          );
+        }
+      }
+      database ??= DBCache(widget.appConfig.appName, widget.appConfig.cacheRefresh * 60);
 
       data ??= CcData(database);
       dataSource ??= GetDataSource.getDataSource(widget.appConfig.dataSource!);

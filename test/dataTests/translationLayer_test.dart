@@ -17,11 +17,9 @@ void main() {
 
       final translator = TranslationLayer(jsonDecode(layer));
 
-      final translatedData = translator.parse(input, "songs");
+      final translatedData = translator.parse(translator.standardizeTranslationData(jsonDecode(input)), "songs");
 
-      print(translatedData);
-
-      expect(translatedData.toString(), translator.standardizeTranslationData(output).toString());
+      expect(translatedData.toString(), translator.standardizeTranslationData(jsonDecode(output)).toString());
     });
   });
 }

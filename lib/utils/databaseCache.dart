@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io' show Directory;
 
 import 'package:cc_core/models/core/ccData.dart';
+import 'package:cc_core/models/core/ccTranslationLayer.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,11 +15,6 @@ import 'package:cc_core/config/appConfig.dart';
 // make all the await database calls just database.something
 // add an isReady property which will get set to true when init() finishes
 // if a method like saveDataToCache() is called when isReady is false, call init and await its result
-
-// TODO: Add expiry to cache
-// get the current dateTime in utc
-// add that time in (milliseconds / 1000).floor() whenever data is cached
-// return that time as a dateTime object in {"cachedAt":dateTime}
 
 /// ## DBCache
 /// creates an instance of a database with [dbName] being the name of the database file
@@ -32,11 +28,10 @@ class DBCache {
   /// In seconds.
   final int expireAfter;
 
-  /// this is only for testing DO NOT USE IN PRODUCTION
-  final Directory? testingDir;
-  // final String appName = ConfigData.appName;
+  /// This is only for ccData
+  final TranslationLayer? translationLayer;
 
-  DBCache(this.dbName, this.expireAfter, {this.testingDir}) {
+  DBCache(this.dbName, this.expireAfter, [this.translationLayer]) {
     database = _openDBCache(dbName);
   }
 
@@ -44,12 +39,9 @@ class DBCache {
   Future<Database> _openDBCache(String? dbName) async {
     Directory? directory;
 
-    if (testingDir == null) {
-      directory = await getApplicationDocumentsDirectory();
-    } else {
-      directory = testingDir;
-    }
-    String path = join(directory!.path, "databases/", "$dbName.db");
+    directory = await getApplicationDocumentsDirectory();
+
+    String path = join(directory.path, "databases/", "$dbName.db");
     Database db = await openDatabase(path);
     return db;
   }
@@ -136,7 +128,7 @@ class DBCache {
         List<Map<String, dynamic>> returnData = await database!.then((db) {
           return db.query(dataTable, where: "dataId='$id'");
         });
-        if (returnData == null || returnData.isEmpty) {
+        if (returnData.isEmpty) {
           return null;
         } else {
           return returnData[0];

@@ -144,7 +144,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
   Future<List> getData() async {
     CcData data = CcData(CcApp.of(context)!.database);
     // grab the data from the new table
-    Map dbData = await (data.getDBData(widget.tableName, CcApp.of(context)!.dataSource) as FutureOr<Map<dynamic, dynamic>>);
+    Map dbData = await (data.getDBData(widget.tableName!, CcApp.of(context)!.dataSource) as FutureOr<Map<dynamic, dynamic>>);
     List vals = List.from(dbData.values);
     List returnValues = [];
     for (var val in vals) {
@@ -160,7 +160,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
 
       // if val["displayAppScreen"] is true, it means we don't need to see the image, so just get the 404 image
       // efficacy needs to be improved here
-      if ((val["tileImageUrl"] != null && val["tileImageUrl"] != "") || !val["displayAppScreen"]) {
+      if ((val["tileImageUrl"] != null && val["tileImageUrl"] != "") && !val["displayAppScreen"]) {
         imageUrls.add(val["tileImageUrl"]);
       } else {
         imageUrls.add("https://i.redd.it/sequence_lhtq7kjhlpp21.png");
@@ -174,31 +174,41 @@ class _ListViewScreenState extends State<ListViewScreen> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration.zero).then((_) {
-      getData().then((vals) {
-        if (mounted) {
-          CcData(CcApp.of(context)!.database).getFiles(imageUrls, widget.tableName!, context).then((images) {
-            listItems = [];
-            for (var i = 0; i < vals.length; i++) {
-              listItems.add(newTile(vals[i]["name"], vals[i]["appScreen"], vals[i]["appScreenParam"], images![i], listItemStyle[i], vals[i]["displayAppScreen"]));
-            }
-            if (mounted) {
-              setState(() {
-                display = ListView(
-                  padding: EdgeInsets.all(10),
-                  shrinkWrap: true,
-                  children: listItems,
-                );
-              });
-            }
-          });
-        }
+    if (widget.tableName != null) {
+      Future.delayed(Duration.zero).then((_) {
+        getData().then((vals) {
+          if (mounted) {
+            CcData(CcApp.of(context)!.database).getFiles(imageUrls, widget.tableName!, context).then((images) {
+              listItems = [];
+              for (var i = 0; i < vals.length; i++) {
+                listItems.add(newTile(vals[i]["name"], vals[i]["appScreen"], vals[i]["appScreenParam"], images[i], listItemStyle[i], vals[i]["displayAppScreen"]));
+              }
+              if (mounted) {
+                setState(() {
+                  display = ListView(
+                    padding: EdgeInsets.all(10),
+                    shrinkWrap: true,
+                    children: listItems,
+                  );
+                });
+              }
+            });
+          }
+        });
       });
-    });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.tableName == null) {
+      return Container(
+        child: Center(
+          child: Text("No database table was supplied"),
+        ),
+      );
+    }
+
     return display;
   }
 }

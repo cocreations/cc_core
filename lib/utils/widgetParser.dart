@@ -38,10 +38,7 @@ class WidgetParser extends StatelessWidget {
         return SwipeScreen(arg);
       default:
         if (CcApp.of(context)!.parserModules != null) {
-          var returnWidget = CcApp.of(context)!.parserModules!.parse(widget, arg);
-          if (returnWidget != null) {
-            return returnWidget;
-          }
+          return CcApp.of(context)!.parserModules!.parse(widget, arg);
         }
 
         return Container(

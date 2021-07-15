@@ -3,9 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'package:cc_core/models/core/ccData.dart';
 
-/// Valid data sources
-enum BackendType { airTable, jsonRest }
-
 /// ## CcDataConnection
 ///
 /// The abstract class for defining a data source to populate the app from
@@ -45,7 +42,7 @@ class AirTableDataConnection extends CcDataConnection {
 
   Future<dynamic> loadData(String? table) async {
     //does a get request with all the auth data and stuff to airtable
-    http.Response response = await http.get(Uri.parse("https://api.airtable.com/v0/$baseId/$table?maxRecords=500&view=Grid%20view"), headers: {"Authorization": "Bearer $apiKey"});
+    http.Response response = await http.get(Uri.parse("https://api.airtable.com/v0/$baseId/$table?maxRecords=500"), headers: {"Authorization": "Bearer $apiKey"});
 
     if (response.statusCode == 200) {
       return standardizeAirtableData(response.body);
@@ -65,7 +62,7 @@ class AirTableDataConnection extends CcDataConnection {
       }
     }
 
-    http.Response response = await http.get(Uri.parse("https://api.airtable.com/v0/$baseId/$table?maxRecords=500&view=Grid%20view&filterByFormula=AND(${stringFilters.join("%2C%20")})"), headers: {"Authorization": "Bearer $apiKey"});
+    http.Response response = await http.get(Uri.parse("https://api.airtable.com/v0/$baseId/$table?maxRecords=500&filterByFormula=AND(${stringFilters.join("%2C%20")})"), headers: {"Authorization": "Bearer $apiKey"});
 
     if (response.statusCode == 200) {
       return standardizeAirtableData(response.body);
@@ -78,9 +75,12 @@ class AirTableDataConnection extends CcDataConnection {
     Map<int, Map<String, String>> returnData = {};
     Map data = jsonDecode(jsonData);
     int i = 0;
+
     // putting all the data in a standardize format
     data['records'].forEach((item) {
       var id = item['fields']['id'];
+      id ??= item['id'];
+
       returnData.putIfAbsent(i, () => {'dataId': '$id', 'dataJson': ""});
       returnData[i]!['dataJson'] = jsonEncode(item['fields']);
       i++;

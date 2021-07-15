@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:cc_core/models/core/ccTranslationLayer.dart';
 import 'package:cc_core/models/core/customAppData.dart';
 import 'package:cc_core/utils/parserModule.dart';
 
@@ -9,6 +12,7 @@ class ConfigData {
     this.appData,
     this.parserModules,
     this.cacheRefresh = 1440,
+    this.translationLayer,
   });
 
   /// Data source effectively the location of all the data the app will use to populate itself.
@@ -139,10 +143,25 @@ class ConfigData {
   /// These allow you to add your own widgets and screens into the json widget parser.
   final ParserModules? parserModules;
 
-  /// How often the cache should refresh its data in minutes. 
+  /// How often the cache should refresh its data in minutes.
   /// Defaults to 1440 which is one day.
-  /// 
+  ///
   /// The cache will still be used after the set time has passed if the app can't get an internet connection.
   /// But it will prioritize getting fresh data if it can.
   final int cacheRefresh;
+
+  /// The path to the translation layer json file.
+  ///
+  /// Example: `"lib/translationLayer.json"`
+  ///
+  /// Remember to add the path to the assets section in pubspec.yaml
+  /// ```yaml
+  ///   assets:
+  ///     - lib/translationLayer.json
+  /// ```
+  ///
+  /// The translation layer that sits between the data / config source and the app.
+  /// This can be used to parse data and allow the app to use databases that weren't originally intended to be used by the app.
+  /// For more information, check the README.md
+  final String? translationLayer;
 }

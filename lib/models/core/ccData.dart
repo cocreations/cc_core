@@ -3,6 +3,7 @@ import 'dart:io' show File, SocketException, InternetAddress, Directory;
 import 'dart:async';
 
 import 'package:cc_core/models/core/ccApp.dart';
+import 'package:cc_core/models/core/ccTranslationLayer.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
@@ -170,20 +171,8 @@ class CcData {
     }
   }
 
-  /// Amazon uses RFC822 time in their timestamps, so I found this converter on [stack overflow](https://stackoverflow.com/a/62310160/8112258)
-  DateTime? _parseRfc822(String input) {
-    var splits = input.split(' ');
-    if (splits[5] == "GMT") {
-      splits[5] = "Z";
-    } else {
-      splits[5] = " " + splits[5];
-    }
-    var reformatted = splits[3] + '-' + MONTHS[splits[2]]! + '-' + (splits[1].length == 1 ? '0' + splits[1] : splits[1]) + ' ' + splits[4] + splits[5];
-    return DateTime.tryParse(reformatted);
-  }
-
   /// Gets data from the database or server backend if the db doesn't have it
-  Future<Map?> getDBData(String? table, CcDataConnection dataConnection) async {
+  Future<Map?> getDBData(String table, CcDataConnection dataConnection) async {
     Map? data;
 
     bool isConnected = dataConnection.requiresInternet ? await hasInternet() : true;
@@ -194,6 +183,21 @@ class CcData {
         saveReadyMap.addAll({typeVal["dataId"].toString(): typeVal["dataJson"]});
       });
       return saveReadyMap;
+    }
+
+    Map translateData() {
+      if (database!.translationLayer != null) {
+        return database!.translationLayer!.parse(data!, table);
+      }
+      return data!;
+    }
+
+    List<DataFilter> _filters() {
+      List<DataFilter> _filters = [];
+      if (database!.translationLayer != null) {
+        _filters = database!.translationLayer!.getFilters(table);
+      }
+      return _filters;
     }
 
     // grab the cache
@@ -222,7 +226,15 @@ class CcData {
       // then refresh the cache if we can
       if (lastTime.add(Duration(seconds: database!.expireAfter)).isBefore(DateTime.now().toUtc())) {
         if (isConnected || !dataConnection.requiresInternet) {
-          data = await dataConnection.loadData(table);
+          var filters = _filters();
+
+          if (filters.isNotEmpty) {
+            data = await dataConnection.getWhere(table, filters);
+          } else {
+            data = await dataConnection.loadData(table);
+          }
+
+          data = translateData();
 
           database!.batchSave(table, readyData());
 
@@ -234,7 +246,15 @@ class CcData {
         return cachedData.asMap();
       }
     } else if (isConnected || !dataConnection.requiresInternet) {
-      data = await (dataConnection.loadData(table) as FutureOr<Map<dynamic, dynamic>?>);
+      var filters = _filters();
+
+      if (filters.isNotEmpty) {
+        data = await dataConnection.getWhere(table, filters);
+      } else {
+        data = await dataConnection.loadData(table);
+      }
+
+      data = translateData();
 
       database!.batchSave(table, readyData());
 
@@ -265,6 +285,21 @@ class CcData {
       return saveReadyMap;
     }
 
+    Map translateData() {
+      if (database!.translationLayer != null) {
+        return database!.translationLayer!.parse(data!, table);
+      }
+      return data!;
+    }
+
+    List<DataFilter> _filters() {
+      List<DataFilter> _filters = filters;
+      if (database!.translationLayer != null) {
+        _filters.addAll(database!.translationLayer!.getFilters(table));
+      }
+      return _filters;
+    }
+
     // grab the cache
     List? cachedData;
     try {
@@ -288,7 +323,9 @@ class CcData {
       // then refresh the cache if we can
       if (lastTime.add(Duration(seconds: database!.expireAfter)).isBefore(DateTime.now().toUtc())) {
         if (isConnected || !dataConnection!.requiresInternet) {
-          data = await (dataConnection!.getWhere(table, filters) as FutureOr<Map<dynamic, dynamic>?>);
+          data = await (dataConnection!.getWhere(table, _filters()) as Future<Map<dynamic, dynamic>?>);
+
+          data = translateData();
 
           database!.batchSave(table, readyData());
 
@@ -300,7 +337,9 @@ class CcData {
         return cachedData.asMap();
       }
     } else if (isConnected || !dataConnection!.requiresInternet) {
-      data = await (dataConnection!.getWhere(table, filters) as FutureOr<Map<dynamic, dynamic>?>);
+      data = await (dataConnection!.getWhere(table, _filters()) as Future<Map<dynamic, dynamic>?>);
+
+      data = translateData();
 
       database!.batchSave(table, readyData());
 
@@ -420,7 +459,7 @@ class CcData {
   }
 
   /// You need files? We got files!
-  Future<List<File?>?> getFiles(
+  Future<List<File?>> getFiles(
     /// The web urls of the files to fetch.
     /// We use a hashed version of the urls for the filenames so thats why its not specified.
     List<String?> urls,
@@ -451,6 +490,10 @@ class CcData {
 
     void Function(Error)? onFileError,
   }) async {
+    if (urls.isEmpty) return [];
+    urls.removeWhere((element) => element == null || element.isEmpty);
+    if (urls.isEmpty) return [];
+
     String sanitizedDir = sanitizeName(dir);
     FileCache fileCache = FileCache();
     List<String> fileNames = [];
@@ -642,7 +685,7 @@ class CcData {
     if ((nd.length != notDownloaded.length) || (d.length != downloaded.length)) {
       if (onFileError != null) {
         onFileError(Error(3010, "Could not retrieve all requested files. Ensure the device has enough space and is online."));
-        return null;
+        return [];
       } else {
         throw Exception(
           """
