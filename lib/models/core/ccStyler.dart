@@ -30,9 +30,7 @@ class CcStyler {
   }
 
   /// A static method that takes image assets and turns them into a CcStyler
-  static CcStyler buildWithAssets(
-    DBCache? database,
-    BuildContext context, {
+  static CcStyler buildWithAssets({
     String? fallbackAppBanner = "App",
     Color appBarBackground = Colors.blue,
     String? appBarBanner,
@@ -63,7 +61,7 @@ class CcStyler {
 
   /// A static method that takes image urls and turns them into a CcStyler
   static Future<CcStyler> buildWithUrls(
-    DBCache? database,
+    DBCache database,
     BuildContext context, {
     String? fallbackAppBanner = "App",
     Color appBarBackground = Colors.blue,

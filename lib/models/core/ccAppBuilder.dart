@@ -56,7 +56,7 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
 
     if (styleData["appBarBanner"] != null && styleData["appBarBanner"].startsWith("http")) {
       return CcStyler.buildWithUrls(
-        database,
+        database!,
         context,
         fallbackAppBanner: widget.appConfig.appName != null ? widget.appConfig.appName : "App",
         appBarBanner: styleData["appBarBanner"] != null ? styleData["appBarBanner"] : null,
@@ -69,8 +69,6 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
       );
     } else {
       return CcStyler.buildWithAssets(
-        database,
-        context,
         fallbackAppBanner: widget.appConfig.appName != null ? widget.appConfig.appName : "App",
         appBarBanner: styleData["appBarBanner"] != null ? styleData["appBarBanner"] : null,
         appBarBackground: styleData["appBarBackground"] != null ? Color(int.parse(styleData["appBarBackground"])) : Colors.blue,
@@ -118,7 +116,7 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
       }
       database ??= DBCache(widget.appConfig.appName, widget.appConfig.cacheRefresh * 60);
 
-      data ??= CcData(database);
+      data ??= CcData(database!);
       dataSource ??= GetDataSource.getDataSource(widget.appConfig.dataSource!);
       configSource ??= GetDataSource.getDataSource(widget.appConfig.configSource!);
 

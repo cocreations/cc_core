@@ -56,7 +56,7 @@ class AirTableDataConnection extends CcDataConnection {
 
     for (var f in filter) {
       if (f.op == Op.arrayContains) {
-        stringFilters.add("IF(REGEX_MATCH(%7B${f.field}%7D%2C%20%22${f.value}%22)%2C%20TRUE()%2C%20FALSE())");
+        stringFilters.add("IF(NOT%28%7B${f.field}%7D%20%3D%20%27%27%29%2C%20TRUE()%2C%20FALSE())");
       } else if (f.op == Op.equals) {
         stringFilters.add("IF(%7B${f.field}%7D%20%3D%20%22${f.value}%22%2C%20TRUE()%2C%20FALSE())");
       }
@@ -65,7 +65,24 @@ class AirTableDataConnection extends CcDataConnection {
     http.Response response = await http.get(Uri.parse("https://api.airtable.com/v0/$baseId/$table?maxRecords=500&filterByFormula=AND(${stringFilters.join("%2C%20")})"), headers: {"Authorization": "Bearer $apiKey"});
 
     if (response.statusCode == 200) {
-      return standardizeAirtableData(response.body);
+      Map data = jsonDecode(response.body);
+
+      Map returnData = {"records": List.from(data["records"])};
+
+      for (var i = data["records"].length - 1; i > 0; i--) {
+        for (var f in filter) {
+          if (f.op == Op.arrayContains) {
+            if (data["records"][i]["fields"][f.field] is List) {
+              if (!data["records"][i]["fields"][f.field].contains(f.value)) {
+                returnData["records"].removeAt(i);
+              }
+            } else {
+              returnData["records"].removeAt(i);
+            }
+          }
+        }
+      }
+      return standardizeAirtableData(jsonEncode(returnData));
     } else {
       throw ("ERROR loading data, http error ${response.statusCode}.");
     }

@@ -29,6 +29,13 @@ class TranslationLayer {
     return [];
   }
 
+  /// Returns the table the database is actually supposed to pull from
+  String getTable(String table) {
+    if (!translationLayerJson.containsKey(table)) return table;
+    if (!translationLayerJson[table].containsKey("table")) return table;
+    return translationLayerJson[table]["table"] ?? table;
+  }
+
   /// Parses any wacky input data into the clean sophisticated data the app uses.
   ///
   /// Expects standardized data i.e. the output of any dataConnection get request
@@ -63,7 +70,6 @@ class TranslationLayer {
 
       //returnData[key.toString()]![k] = returnData[key.toString()]![k]!.replaceAll("", replace);
     });
-
 
     return standardizeTranslationData(returnData);
   }

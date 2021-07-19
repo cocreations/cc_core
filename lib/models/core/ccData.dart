@@ -87,7 +87,7 @@ const MONTHS = {
 ///
 /// This class handles all data related things throughout the app/s
 class CcData {
-  final DBCache? database;
+  final DBCache database;
 
   /// In seconds
   ///
@@ -177,6 +177,8 @@ class CcData {
 
     bool isConnected = dataConnection.requiresInternet ? await hasInternet() : true;
 
+    final String dbTable = database.translationLayer != null ? database.translationLayer!.getTable(table) : table;
+
     Map<String, String?> readyData() {
       Map<String, String?> saveReadyMap = Map();
       data!.forEach((typeKey, typeVal) {
@@ -186,16 +188,16 @@ class CcData {
     }
 
     Map translateData() {
-      if (database!.translationLayer != null) {
-        return database!.translationLayer!.parse(data!, table);
+      if (database.translationLayer != null) {
+        return database.translationLayer!.parse(data!, table);
       }
       return data!;
     }
 
     List<DataFilter> _filters() {
       List<DataFilter> _filters = [];
-      if (database!.translationLayer != null) {
-        _filters = database!.translationLayer!.getFilters(table);
+      if (database.translationLayer != null) {
+        _filters = database.translationLayer!.getFilters(table);
       }
       return _filters;
     }
@@ -203,7 +205,7 @@ class CcData {
     // grab the cache
     List cachedData;
     try {
-      cachedData = await database!.loadFromCache(table);
+      cachedData = await database.loadFromCache(dbTable);
     } catch (e) {
       print(e);
       throw (e);
@@ -224,19 +226,19 @@ class CcData {
 
       // if the oldest cache plus the expireAfter is older than the current time
       // then refresh the cache if we can
-      if (lastTime.add(Duration(seconds: database!.expireAfter)).isBefore(DateTime.now().toUtc())) {
+      if (lastTime.add(Duration(seconds: database.expireAfter)).isBefore(DateTime.now().toUtc())) {
         if (isConnected || !dataConnection.requiresInternet) {
           var filters = _filters();
 
           if (filters.isNotEmpty) {
-            data = await dataConnection.getWhere(table, filters);
+            data = await dataConnection.getWhere(dbTable, filters);
           } else {
-            data = await dataConnection.loadData(table);
+            data = await dataConnection.loadData(dbTable);
           }
 
           data = translateData();
 
-          database!.batchSave(table, readyData());
+          database.batchSave(dbTable, readyData());
 
           return data;
         } else {
@@ -249,14 +251,14 @@ class CcData {
       var filters = _filters();
 
       if (filters.isNotEmpty) {
-        data = await dataConnection.getWhere(table, filters);
+        data = await dataConnection.getWhere(dbTable, filters);
       } else {
-        data = await dataConnection.loadData(table);
+        data = await dataConnection.loadData(dbTable);
       }
 
       data = translateData();
 
-      database!.batchSave(table, readyData());
+      database.batchSave(dbTable, readyData());
 
       return data;
     } else {
@@ -277,6 +279,8 @@ class CcData {
 
     bool isConnected = await hasInternet();
 
+    final String dbTable = database.translationLayer != null ? database.translationLayer!.getTable(table) : table;
+
     Map<String, String?> readyData() {
       Map<String, String?> saveReadyMap = Map();
       data!.forEach((typeKey, typeVal) {
@@ -286,16 +290,16 @@ class CcData {
     }
 
     Map translateData() {
-      if (database!.translationLayer != null) {
-        return database!.translationLayer!.parse(data!, table);
+      if (database.translationLayer != null) {
+        return database.translationLayer!.parse(data!, table);
       }
       return data!;
     }
 
     List<DataFilter> _filters() {
       List<DataFilter> _filters = filters;
-      if (database!.translationLayer != null) {
-        _filters.addAll(database!.translationLayer!.getFilters(table));
+      if (database.translationLayer != null) {
+        _filters.addAll(database.translationLayer!.getFilters(table));
       }
       return _filters;
     }
@@ -303,7 +307,7 @@ class CcData {
     // grab the cache
     List? cachedData;
     try {
-      cachedData = await database!.getWhere(table, filters);
+      cachedData = await database.getWhere(dbTable, filters);
     } catch (e) {
       print(e);
     }
@@ -321,13 +325,13 @@ class CcData {
 
       // if the oldest cache plus the expireAfter is older than the current time
       // then refresh the cache if we can
-      if (lastTime.add(Duration(seconds: database!.expireAfter)).isBefore(DateTime.now().toUtc())) {
+      if (lastTime.add(Duration(seconds: database.expireAfter)).isBefore(DateTime.now().toUtc())) {
         if (isConnected || !dataConnection!.requiresInternet) {
-          data = await (dataConnection!.getWhere(table, _filters()) as Future<Map<dynamic, dynamic>?>);
+          data = await (dataConnection!.getWhere(dbTable, _filters()) as Future<Map<dynamic, dynamic>?>);
 
           data = translateData();
 
-          database!.batchSave(table, readyData());
+          database.batchSave(dbTable, readyData());
 
           return data;
         } else {
@@ -337,11 +341,11 @@ class CcData {
         return cachedData.asMap();
       }
     } else if (isConnected || !dataConnection!.requiresInternet) {
-      data = await (dataConnection!.getWhere(table, _filters()) as Future<Map<dynamic, dynamic>?>);
+      data = await (dataConnection!.getWhere(dbTable, _filters()) as Future<Map<dynamic, dynamic>?>);
 
       data = translateData();
 
-      database!.batchSave(table, readyData());
+      database.batchSave(dbTable, readyData());
 
       return data;
     } else {

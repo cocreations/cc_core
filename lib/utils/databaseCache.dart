@@ -195,7 +195,7 @@ class DBCache {
           }
         }
 
-        if (returnData == null || returnData.isEmpty) {
+        if (returnData.isEmpty) {
           return null;
         } else {
           return returnData;

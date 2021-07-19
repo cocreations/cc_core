@@ -6,6 +6,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group("Test translation layer", () {
+    test("table", () async {
+      final layerFile = File('test/dataTests/layer.json');
+      final layer = await layerFile.readAsString();
+
+      final translator = TranslationLayer(jsonDecode(layer));
+
+      expect(translator.getTable("songs"), "entertainment");
+    });
+
     test("translate", () async {
       final inputFile = File('test/dataTests/input.json');
       final layerFile = File('test/dataTests/layer.json');
