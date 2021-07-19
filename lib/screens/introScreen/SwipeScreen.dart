@@ -33,7 +33,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
   Widget buildDots() {
     List<Widget> dots = [];
 
-    if (pages != null) {
+    if (pages.isNotEmpty) {
       for (var i = 0; i < pages.length; i++) {
         if (i == currentPage) {
           dots.add(

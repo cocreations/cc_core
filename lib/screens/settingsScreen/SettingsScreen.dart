@@ -42,7 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     builtList.add(
       Center(
-        child: FlatButton(
+        child: TextButton(
           child: Text("Reset to default"),
           onPressed: () {
             for (var i = 0; i < settings.length; i++) {
@@ -104,7 +104,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (defaultSettings != null) compareLocalSettingsToAssetDefaults();
       });
 
-      CcApp.of(context)!.configSource!.loadData("settings").then((defaultConfigSettings) {
+      CcApp.of(context)!.configSource.loadData("settings").then((defaultConfigSettings) {
         defaultSettings = defaultConfigSettings;
 
         if (localSqlSettings != null) compareLocalSettingsToAssetDefaults();

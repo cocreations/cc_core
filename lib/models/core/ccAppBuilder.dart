@@ -146,7 +146,7 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
         ),
         styler: style,
         appId: widget.appConfig.appName!,
-        configSource: configSource,
+        configSource: configSource!,
         dataSource: dataSource!,
         database: database!,
         homeScreen: homeScreen,

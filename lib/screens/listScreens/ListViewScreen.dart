@@ -183,13 +183,19 @@ class _ListViewScreenState extends State<ListViewScreen> {
               for (var i = 0; i < vals.length; i++) {
                 listItems.add(newTile(vals[i]["name"], vals[i]["appScreen"], vals[i]["appScreenParam"], images[i], listItemStyle[i], vals[i]["displayAppScreen"]));
               }
+
               if (mounted) {
                 setState(() {
-                  display = ListView(
-                    padding: EdgeInsets.all(10),
-                    shrinkWrap: true,
-                    children: listItems,
+                  display = ListView.builder(
+                    itemBuilder: (_, i) {
+                      return listItems[i];
+                    },
                   );
+                  // display = ListView(
+                  //   padding: EdgeInsets.all(10),
+                  //   shrinkWrap: true,
+                  //   children: listItems,
+                  // );
                 });
               }
             });

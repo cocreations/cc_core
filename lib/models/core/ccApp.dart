@@ -19,7 +19,7 @@ class CcApp extends InheritedWidget {
   final String appId;
 
   /// this is where the app gets things like menu layouts and style data
-  final CcDataConnection? configSource;
+  final CcDataConnection configSource;
 
   /// this is where the app gets data that specific screens need, like soundtrails or images
   final CcDataConnection dataSource;
