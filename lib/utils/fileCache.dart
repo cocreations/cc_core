@@ -21,7 +21,7 @@ class FileCache {
   FileCache();
 
   /// downloads a file and caches it to a specific folder
-  /// returns null if it fails
+  /// Throws if fails
   Future<File?> cacheFile(String url, String folderName, String fileName) async {
     // do a http get to grab the file
     http.Response? response;
@@ -29,7 +29,7 @@ class FileCache {
     try {
       response = await http.get(Uri.parse(url));
     } catch (e, stacktrace) {
-      print("failed to get file: $e\nStacktrace: $stacktrace");
+      print("failed to get file: $e\nStacktrace:\n$stacktrace");
     }
 
     if (response == null) return null;
@@ -46,13 +46,13 @@ class FileCache {
     } else {
       // oh no! the status code wasn't 200
       print("ERROR: http error ${response.statusCode}");
-      return null;
+      return throw Exception("http error: ${response.statusCode} on $url");
     }
   }
 
   /// downloads a list of files and caches them to a specific folder
-  /// returns null if it fails
-  Future<List<File?>> cacheFiles(
+  /// returns an empty text file called 'null.txt' if it fails
+  Future<List<File>> cacheFiles(
     List<String?> urls,
     String folderName,
     List<String> fileNames, {
@@ -76,7 +76,7 @@ class FileCache {
 
     Directory folder = await Directory("${path.path}/$folderName").create();
 
-    List<File?> files = List<File?>.filled(urls.length, null, growable: true);
+    List<File> files = List<File>.filled(urls.length, File("${path.path}/$folderName/null.text"), growable: true);
 
     int loops = 0;
     bool complete = false;
@@ -103,10 +103,12 @@ class FileCache {
       // but I also need to ensure it's all complete by the end
       // so I'm just running this function in a loop and adding the resulting futures to a list
       // which then gets awaited with Future.wait();
-      http.Response val;
+      http.Response? val;
 
       try {
-        val = await http.get(Uri.parse(urls[i]!));
+        if (urls[i]!.isNotEmpty) {
+          val = await http.get(Uri.parse(urls[i]!));
+        }
       } catch (e) {
         if (onFileError != null) {
           onFileError(Error(3020, "$e"));
@@ -117,32 +119,35 @@ class FileCache {
 
       // just need to make sure we didn't have any problems
 
-      if (val == null) {
-        if (onFileError != null) {
-          onFileError(Error(3020, "http.get(${urls[i]}) returned null. I didn't even know this was possible."));
+      // if (val == null) {
+      //   if (onFileError != null) {
+      //     onFileError(Error(3020, "http.get(${urls[i]}) returned null. I didn't even know this was possible."));
+      //   } else {
+      //     throw Exception("http.get(${urls[i]}) straight up didn't work");
+      //   }
+      // }
+      if (val != null) {
+        if (val.statusCode == 200) {
+          // finally make a new file
+          files[i] = await File('${folder.path}/${fileNames[i]}').create();
+
+          // and add the http response data to it
+          files[i].writeAsBytesSync(val.bodyBytes);
+          callbackHandler();
+        } else if (val.statusCode == 404 && skip404) {
+          if (onFileError != null) {
+            onFileError(Error(3011, val.request!.url.toString()));
+          }
+          callbackHandler();
         } else {
-          throw Exception("http.get(${urls[i]}) straight up didn't work");
+          if (onFileError != null) {
+            onFileError(Error(3020, "${val.request!.url.toString()} returned with a ${val.statusCode}"));
+            if (allowNullFiles) return;
+          }
+          return Future.error(Exception("error fetching files, URL: ${urls[i]}, returned ${val.statusCode}"));
         }
-      }
-
-      if (val.statusCode == 200) {
-        // finally make a new file
-        files[i] = await File('${folder.path}/${fileNames[i]}').create();
-
-        // and add the http response data to it
-        files[i]!.writeAsBytesSync(val.bodyBytes);
-        callbackHandler();
-      } else if (val.statusCode == 404 && skip404) {
-        if (onFileError != null) {
-          onFileError(Error(3011, val.request!.url.toString()));
-        }
-        callbackHandler();
       } else {
-        if (onFileError != null) {
-          onFileError(Error(3020, "${val.request!.url.toString()} returned with a ${val.statusCode}"));
-          if (allowNullFiles) return;
-        }
-        return Future.error(Exception("error fetching files, URL: ${urls[i]}, returned ${val.statusCode}"));
+        files[i] = await File("${folder.path}/null.text").create();
       }
     }
 

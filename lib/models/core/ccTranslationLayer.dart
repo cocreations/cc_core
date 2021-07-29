@@ -62,7 +62,15 @@ class TranslationLayer {
 
       returnData[key.toString()]!.updateAll((k, v) {
         String newVal = v.replaceAllMapped(RegExp(r"{[ -z]+}"), (match) {
-          return inputData[key][match.input.substring(match.start + 1, match.end - 1)] ?? "";
+          if (inputData[key][match.input.substring(match.start + 1, match.end - 1)] == null) {
+            return "";
+          }
+
+          if (inputData[key][match.input.substring(match.start + 1, match.end - 1)] is String) {
+            return inputData[key][match.input.substring(match.start + 1, match.end - 1)];
+          }
+
+          return jsonEncode(inputData[key][match.input.substring(match.start + 1, match.end - 1)]!);
         });
 
         return newVal;

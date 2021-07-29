@@ -98,6 +98,21 @@ class AirTableDataConnection extends CcDataConnection {
       var id = item['fields']['id'];
       id ??= item['id'];
 
+      // if we have elements of type attachment we take the urls and discard the rest
+      for (var i = 0; i < item['fields'].length; i++) {
+        if (item['fields'].values.elementAt(i) is List) {
+          if (item['fields'].values.elementAt(i).first != null && item['fields'].values.elementAt(i).first is Map) {
+            if (item['fields'].values.elementAt(i).first["url"] != null) {
+              List url = [];
+              for (var el in item['fields'].values.elementAt(i)) {
+                url.add(el["url"]);
+              }
+              item['fields'][item['fields'].keys.elementAt(i)] = url.join(",");
+            }
+          }
+        }
+      }
+
       returnData.putIfAbsent(i, () => {'dataId': '$id', 'dataJson': ""});
       returnData[i]!['dataJson'] = jsonEncode(item['fields']);
       i++;

@@ -35,9 +35,11 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       if (args.length >= 3 && args[2].isNotEmpty) image = await CcData(CcApp.of(context)!.database).getFile(args[2], "${CcApp.of(context)!.appId}Audio");
       if (args.length >= 2 && args[1].isNotEmpty) title = args[1];
       if (args[0].isNotEmpty) {
-        audioItem = await CcData(CcApp.of(context)!.database).getFile(args[0], "${CcApp.of(context)!.appId}Audio").then((file) {
-          return AudioItem.buildFromFile(file);
-        });
+        if (mounted) {
+          audioItem = await CcData(CcApp.of(context)!.database).getFile(args[0], "${CcApp.of(context)!.appId}Audio").then((file) {
+            return AudioItem.buildFromFile(file);
+          });
+        }
       } else {
         audioItem = await AudioItem.buildFromFile(null);
       }

@@ -572,7 +572,11 @@ class CcData {
           List<int> indexInDownloadedList = [];
 
           downloaded.forEach((file) async {
-            lastModsLocal.add(await file!.lastModified());
+            if (file != null) {
+              lastModsLocal.add(await file.lastModified());
+            } else {
+              lastModsLocal.add(DateTime(1970));
+            }
           });
 
           try {
@@ -589,7 +593,7 @@ class CcData {
             var responses = await Future.wait(futureResponses);
 
             responses.forEach((response) {
-              if (response != null) {
+              if (response.headers["last-modified"] != null) {
                 lastModsHead.add(response.headers["last-modified"]);
               }
             });
