@@ -69,7 +69,7 @@ class AirTableDataConnection extends CcDataConnection {
 
       Map returnData = {"records": List.from(data["records"])};
 
-      for (var i = data["records"].length - 1; i > 0; i--) {
+      for (var i = data["records"].length - 1; i >= 0; i--) {
         for (var f in filter) {
           if (f.op == Op.arrayContains) {
             if (data["records"][i]["fields"][f.field] is List) {
