@@ -2,6 +2,7 @@ import 'package:cc_core/models/core/ccApp.dart';
 import 'package:cc_core/screens/introScreen/SwipeScreen.dart';
 import 'package:cc_core/screens/listScreens/ListViewScreen.dart';
 import 'package:cc_core/screens/mediaPlayers/audioPlayerScreen.dart';
+import 'package:cc_core/screens/simpleScreens/imageBackgroundScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cc_core/screens/emptyTestScreen/emptyImageScreen.dart';
 import 'package:cc_core/screens/emptyTestScreen/emptyTestScreen.dart';
@@ -22,6 +23,8 @@ class WidgetParser extends StatelessWidget {
         return EmptyImageScreen(url: arg);
       case "TextScreen":
         return TextScreen(string: arg!);
+      case "ImageBackgroundScreen":
+        return ImageBackgroundScreen(arg);
       case "MapScreen":
         return MapScreen(mbTilesUrl: arg);
       case "ListViewScreen":

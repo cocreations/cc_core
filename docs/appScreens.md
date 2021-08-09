@@ -5,6 +5,10 @@ This doc will outline all the pre-installed app screens and instructions on how 
 `TextScreen` is a simple screen that takes a string as an input an displays it in the centre of the screen.
 It will also parse html.
 
+### ImageBackgroundScreen
+`ImageBackgroundScreen` is a simple screen that takes an image url and a string separated by a comma as an input an displays the image and text in the centre of the screen.
+It will also parse html.
+
 ### SettingsScreen
 `SettingsScreen` takes the settings table from the `configSource` and allows the user to alter the settings. Keep in mind you are responsible for populating the settings and adding functionality.
 
