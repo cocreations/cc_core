@@ -48,6 +48,7 @@ class _ImageBackgroundScreenState extends State<ImageBackgroundScreen> {
       body: Center(
         //Text(widget.string)
         child: Stack(
+          alignment: Alignment.center,
           children: [
             imageWidget,
             args.length >= 2
