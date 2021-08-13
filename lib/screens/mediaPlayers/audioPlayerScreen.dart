@@ -4,6 +4,7 @@ import 'package:cc_core/components/audioWidget.dart';
 import 'package:cc_core/models/core/audioItem.dart';
 import 'package:cc_core/models/core/ccApp.dart';
 import 'package:cc_core/models/core/ccData.dart';
+import 'package:cc_core/utils/textUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
@@ -29,7 +30,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero).then((_) async {
-      List<String> args = widget.args!.split(",");
+      List<String> args = TextUtils.parseParam(widget.args);
 
       // I wanted to use a switch case with no break here, but dart wouldn't let me :(
       if (args.length >= 3 && args[2].isNotEmpty) image = await CcData(CcApp.of(context)!.database).getFile(args[2], "${CcApp.of(context)!.appId}Audio");

@@ -1,3 +1,4 @@
+import 'package:cc_core/utils/textUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:cc_core/models/core/ccApp.dart';
 import 'package:cc_core/models/core/ccData.dart';
@@ -20,7 +21,7 @@ class _ImageBackgroundScreenState extends State<ImageBackgroundScreen> {
     super.initState();
     Future.delayed(Duration.zero).then((_) {
       if (widget.arg != null) {
-        args = widget.arg!.split(",");
+        args = TextUtils.parseParam(widget.arg);
 
         CcData data = CcData(CcApp.of(context)!.database);
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cc_core/models/core/ccApp.dart';
 import 'package:cc_core/models/core/ccData.dart';
+import 'package:cc_core/utils/textUtils.dart';
 import 'package:cc_core/utils/widgetParser.dart';
 import 'package:flutter/material.dart';
 
@@ -98,7 +99,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero).then((_) {
-      List<String> args = widget.arg!.split(",");
+      List<String> args = TextUtils.parseParam(widget.arg);
       if (args.first.isEmpty) return;
       if (args.length >= 2) endButtonText = args[1];
       CcData(CcApp.of(context)!.database).getDBData(args.first, CcApp.of(context)!.dataSource).then((dbData) {
