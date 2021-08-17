@@ -159,6 +159,10 @@ class DBCache {
           } else if (filter.op == Op.arrayContains) {
             // this just ensures the returned value will be an array
             jsonDBFilters.add("dataJson LIKE '%\"${filter.field}\":[%'");
+          } else if (filter.op == Op.notEquals) {
+            // make sure the field exists, but it's not set to the value
+            jsonDBFilters.add("dataJson LIKE '%\"${filter.field}\":\"%'");
+            jsonDBFilters.add("dataJson NOT LIKE '%\"${filter.field}\":\"${filter.value}\"%'");
           }
         });
 

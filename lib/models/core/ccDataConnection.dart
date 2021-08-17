@@ -59,6 +59,8 @@ class AirTableDataConnection extends CcDataConnection {
         stringFilters.add("IF(NOT%28%7B${f.field}%7D%20%3D%20%27%27%29%2C%20TRUE()%2C%20FALSE())");
       } else if (f.op == Op.equals) {
         stringFilters.add("IF(%7B${f.field}%7D%20%3D%20%22${f.value}%22%2C%20TRUE()%2C%20FALSE())");
+      } else if (f.op == Op.notEquals) {
+        stringFilters.add("IF(%7B${f.field}%7D%20%3D%20%22${f.value}%22%2C%20FALSE()%2C%20TRUE())");
       }
     }
 
@@ -184,6 +186,8 @@ class FirebaseDataConnection extends CcDataConnection {
         jsonFirebaseFilters.add("{\"fieldFilter\":{\"field\":{\"fieldPath\":\"${filter.field}\"},\"op\":\"EQUAL\",\"value\":{\"stringValue\":\"${filter.value}\"}}}");
       } else if (filter.op == Op.arrayContains) {
         jsonFirebaseFilters.add("{\"fieldFilter\":{\"field\":{\"fieldPath\":\"${filter.field}\"},\"op\":\"ARRAY_CONTAINS\",\"value\":{\"stringValue\":\"${filter.value}\"}}}");
+      } else if (filter.op == Op.notEquals) {
+        jsonFirebaseFilters.add("{\"fieldFilter\":{\"field\":{\"fieldPath\":\"${filter.field}\"},\"op\":\"NOT_EQUAL\",\"value\":{\"stringValue\":\"${filter.value}\"}}}");
       }
     });
 
@@ -331,6 +335,10 @@ class AssetDataConnection extends CcDataConnection {
               break;
             }
             break;
+          } else if (filters[i].op == Op.notEquals) {
+            if (json[filters[i].field] == filters[i].value) {
+              break;
+            }
           }
         }
       });

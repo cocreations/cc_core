@@ -21,6 +21,9 @@ enum Op {
 
   /// Array Contains will only return true if the field is an array and it contains the value
   arrayContains,
+
+  /// "!="
+  notEquals,
 }
 
 /// The filter for a getWhere search
@@ -54,6 +57,9 @@ class DataFilter {
         break;
       case "equals":
         op = Op.equals;
+        break;
+      case "notEquals":
+        op = Op.notEquals;
         break;
       default:
         op = Op.equals;
