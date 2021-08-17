@@ -51,8 +51,8 @@ class FileCache {
   }
 
   /// downloads a list of files and caches them to a specific folder
-  /// returns an empty text file called 'null.txt' if it fails
-  Future<List<File>> cacheFiles(
+  /// returns null if it fails
+  Future<List<File?>> cacheFiles(
     List<String?> urls,
     String folderName,
     List<String> fileNames, {
@@ -76,7 +76,7 @@ class FileCache {
 
     Directory folder = await Directory("${path.path}/$folderName").create();
 
-    List<File> files = List<File>.filled(urls.length, File("${path.path}/$folderName/null.text"), growable: true);
+    List<File?> files = List<File?>.filled(urls.length, null, growable: true);
 
     int loops = 0;
     bool complete = false;
@@ -132,7 +132,7 @@ class FileCache {
           files[i] = await File('${folder.path}/${fileNames[i]}').create();
 
           // and add the http response data to it
-          files[i].writeAsBytesSync(val.bodyBytes);
+          files[i]!.writeAsBytesSync(val.bodyBytes);
           callbackHandler();
         } else if (val.statusCode == 404 && skip404) {
           if (onFileError != null) {
@@ -147,7 +147,7 @@ class FileCache {
           return Future.error(Exception("error fetching files, URL: ${urls[i]}, returned ${val.statusCode}"));
         }
       } else {
-        files[i] = await File("${folder.path}/null.text").create();
+        files[i] = null;
       }
     }
 
@@ -196,9 +196,13 @@ class FileCache {
     Directory path = await getApplicationDocumentsDirectory();
     // check file
     for (var fileName in fileNames) {
-      // if one of the files fails we just return a false
-      bool gotThisOne = await FileSystemEntity.isFile('${path.path}/$folderName/$fileName');
-      result.add(FileDownloadStatus(fileName, gotThisOne));
+      if (fileName.isNotEmpty) {
+        // if one of the files fails we just return a false
+        bool gotThisOne = await FileSystemEntity.isFile('${path.path}/$folderName/$fileName');
+        result.add(FileDownloadStatus(fileName, gotThisOne));
+      } else {
+        result.add(FileDownloadStatus(fileName, false));
+      }
     }
     return result;
   }

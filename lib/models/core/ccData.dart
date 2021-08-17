@@ -501,8 +501,8 @@ class CcData {
     void Function(Error)? onFileError,
   }) async {
     if (urls.isEmpty) return [];
-    urls.removeWhere((element) => element == null || element.isEmpty);
-    if (urls.isEmpty) return [];
+    // urls.removeWhere((element) => element == null || element.isEmpty);
+    // if (urls.isEmpty) return [];
 
     String sanitizedDir = sanitizeName(dir);
     FileCache fileCache = FileCache();
@@ -538,8 +538,10 @@ class CcData {
     // we're using a hash for the filename so we don't have to worry about getting an identical file error
     // dude you mentioned that like 3 times now, WE GET IT, YOU USE A HASH FOR THE FILE NAMES!
     for (var i = 0; i < urls.length; i++) {
-      if (urls[i] != null) {
+      if (urls[i] != null && urls[i]!.isNotEmpty) {
         fileNames.add("${sha1.convert(utf8.encode(urls[i]!)).toString()}${getExtension(urls[i]!)}");
+      } else {
+        fileNames.add("");
       }
     }
 

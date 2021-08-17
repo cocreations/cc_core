@@ -55,7 +55,6 @@ class _ImageBackgroundScreenState extends State<ImageBackgroundScreen> {
             args.length >= 2
                 ? Html(
                     data: args[1],
-                    style: {"body": Style(textAlign: TextAlign.center)},
                   )
                 : Container(),
           ],

@@ -1,6 +1,7 @@
 import 'package:cc_core/models/core/ccApp.dart';
 import 'package:cc_core/screens/introScreen/SwipeScreen.dart';
 import 'package:cc_core/screens/listScreens/ListViewScreen.dart';
+import 'package:cc_core/screens/listScreens/TiledListScreen.dart';
 import 'package:cc_core/screens/mediaPlayers/audioPlayerScreen.dart';
 import 'package:cc_core/screens/simpleScreens/imageBackgroundScreen.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,8 @@ class WidgetParser extends StatelessWidget {
         return MapScreen(mbTilesUrl: arg);
       case "ListViewScreen":
         return ListViewScreen(arg);
+      case "TiledListScreen":
+        return TiledListScreen(arg);
       case "SettingsScreen":
         return SettingsScreen();
       case "LargeAudioPlayer":
