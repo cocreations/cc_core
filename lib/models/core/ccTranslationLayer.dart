@@ -13,6 +13,27 @@ class TranslationLayer {
     return false;
   }
 
+  /// Checks to ensure the data fits the output of the translator.
+  /// Returns false if [data] is empty
+  bool fitsTranslation(Map data, String table) {
+    if (!translationLayerJson.containsKey(table)) {
+      return true;
+    }
+
+    Map template = translationLayerJson[table]!;
+
+    if (template["output"] == null) {
+      return true;
+    }
+
+    Map inputData = fromStandardData(data);
+
+    if (inputData.isEmpty) return false;
+
+    // if the data was translated, the keys and the order they appear in should be identical
+    return inputData.values.first.keys == template["output"].keys;
+  }
+
   /// Returns an empty list if there are no filters in the specified table
   List<DataFilter> getFilters(String table) {
     if (translationLayerJson[table] != null) {

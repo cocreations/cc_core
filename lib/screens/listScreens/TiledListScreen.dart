@@ -150,6 +150,7 @@ class _TiledListScreenState extends State<TiledListScreen> {
   Future<List> getData() async {
     CcData data = CcData(CcApp.of(context)!.database);
     // grab the data from the new table
+    
     Map? dbData = await data.getDBData(widget.tableName!, CcApp.of(context)!.dataSource);
 
     List vals = dbData != null ? List.from(dbData.values) : [];

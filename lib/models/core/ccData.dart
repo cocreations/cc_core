@@ -211,14 +211,16 @@ class CcData {
     // grab the cache
     List cachedData;
     try {
-      cachedData = await database.loadFromCache(dbTable);
+      cachedData = await database.loadFromCache(table);
     } catch (e) {
       print(e);
       throw (e);
     }
 
-    // if we have cache
-    if (cachedData.isNotEmpty) {
+    final bool fitsTranslation = database.translationLayer != null ? database.translationLayer!.fitsTranslation(cachedData.asMap(), table) : true;
+
+    // if we have cache and it fits the output of the translation layer
+    if (cachedData.isNotEmpty && fitsTranslation) {
       // if the object cant expire
       // just return the object
       if (!canExpire) return cachedData.asMap();
@@ -244,7 +246,7 @@ class CcData {
 
           data = translateData();
 
-          database.batchSave(dbTable, readyData());
+          database.batchSave(table, readyData());
 
           return data;
         } else {
@@ -264,7 +266,7 @@ class CcData {
 
       data = translateData();
 
-      database.batchSave(dbTable, readyData());
+      database.batchSave(table, readyData());
 
       return data;
     } else {
@@ -311,23 +313,26 @@ class CcData {
     }
 
     // grab the cache
-    List? cachedData;
+    List cachedData;
     try {
-      cachedData = await database.getWhere(dbTable, filters);
+      cachedData = await database.getWhere(table, filters);
     } catch (e) {
       print(e);
+      throw (e);
     }
 
-    // if we have cache
-    if (cachedData != null && cachedData.isNotEmpty) {
+    final bool fitsTranslation = database.translationLayer != null ? database.translationLayer!.fitsTranslation(cachedData.asMap(), table) : true;
+
+    // if we have cache and it fits the output of the translation layer
+    if (cachedData.isNotEmpty && fitsTranslation) {
       if (!canExpire) return cachedData.asMap();
 
-      double? oldestElement = double.maxFinite;
+      double oldestElement = double.maxFinite;
       // get the lowest "lastUpdated" number, meaning the oldest cache
       cachedData.forEach((element) {
-        if (element["lastUpdated"] != null && oldestElement! > element["lastUpdated"]) oldestElement = element["lastUpdated"];
+        if (element["lastUpdated"] != null && oldestElement > element["lastUpdated"]) oldestElement = element["lastUpdated"];
       });
-      DateTime lastTime = DateTime.fromMillisecondsSinceEpoch((oldestElement! * 1000).floor(), isUtc: true);
+      DateTime lastTime = DateTime.fromMillisecondsSinceEpoch((oldestElement * 1000).floor(), isUtc: true);
 
       // if the oldest cache plus the expireAfter is older than the current time
       // then refresh the cache if we can
@@ -337,7 +342,7 @@ class CcData {
 
           data = translateData();
 
-          database.batchSave(dbTable, readyData());
+          database.batchSave(table, readyData());
 
           return data;
         } else {
@@ -351,7 +356,7 @@ class CcData {
 
       data = translateData();
 
-      database.batchSave(dbTable, readyData());
+      database.batchSave(table, readyData());
 
       return data;
     } else {

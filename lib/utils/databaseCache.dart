@@ -140,7 +140,7 @@ class DBCache {
   }
 
   /// query the db with a filter
-  Future<List<Map<String, dynamic>>?> getWhere(
+  Future<List<Map<String, dynamic>>> getWhere(
     /// the filter
     String dataTable,
     List<DataFilter> filters,
@@ -174,7 +174,7 @@ class DBCache {
         if (filters.any((element) => element.op == Op.arrayContains)) {
           List<int> toBeRemoved = [];
 
-          if (returnData != null && returnData.isNotEmpty) {
+          if (returnData.isNotEmpty) {
             for (var i = 0; i < returnData.length; i++) {
               var json = jsonDecode(returnData[i]["dataJson"]);
 
@@ -199,11 +199,7 @@ class DBCache {
           }
         }
 
-        if (returnData.isEmpty) {
-          return null;
-        } else {
-          return returnData;
-        }
+        return returnData;
       } else {
         throw Exception("getWhere error. Failed to load $filters from $dataTable.");
       }
