@@ -13,8 +13,24 @@ class ImageBackgroundScreen extends StatefulWidget {
 
 class _ImageBackgroundScreenState extends State<ImageBackgroundScreen> {
   Widget imageWidget = Center(child: CircularProgressIndicator());
-  bool loading = true;
   List<String> args = [];
+
+  BoxFit imageFit = BoxFit.contain;
+
+  void parseOptionalArg(String arg) {
+    List<String> kv = arg.split(":");
+
+    switch (kv.first) {
+      case "imageFit":
+        // i don't need to add a kv.last == "contain" because it's already the default
+        if (kv.last == "crop") {
+          imageFit = BoxFit.cover;
+        } else if (kv.last == "stretch") {
+          imageFit = BoxFit.fill;
+        }
+        break;
+    }
+  }
 
   @override
   void initState() {
@@ -23,28 +39,35 @@ class _ImageBackgroundScreenState extends State<ImageBackgroundScreen> {
       if (widget.arg != null) {
         args = TextUtils.parseParam(widget.arg);
 
+        print("ImageBackgroundScreen = $args");
+
         CcData data = CcData(CcApp.of(context)!.database);
 
-        data.getFile(args.first, "images").then(
-              (i) => setState(
-                () {
-                  loading = false;
-                  imageWidget = Image.file(i!);
-                },
-              ),
+        // need to run through all the other optional arguments
+        if (args.length > 2) {
+          for (var i = 2; i < args.length; i++) {
+            if (args[i].contains(":")) {
+              parseOptionalArg(args[i]);
+            }
+          }
+        }
+
+        data.getFile(args.first, "images").then((i) {
+          setState(() {
+            imageWidget = Image.file(
+              i!,
+              fit: imageFit,
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
             );
+          });
+        });
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (loading) {
-      // getting file from the db
-
-    } else {
-      loading = true;
-    }
     return Scaffold(
       body: Center(
         //Text(widget.string)

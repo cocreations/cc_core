@@ -1,5 +1,5 @@
 class TextUtils {
-  /// Parses a scv into a list while ignoring escaped commas (\,)
+  /// Parses a scv into a list while ignoring escaped commas (\\,)
   static List<String> parseParam(String? appScreenParam) {
     if (appScreenParam == null) {
       return [];

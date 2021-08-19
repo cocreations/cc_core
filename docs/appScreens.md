@@ -6,8 +6,14 @@ This doc will outline all the pre-installed app screens and instructions on how 
 It will also parse html.
 
 ### ImageBackgroundScreen
-`ImageBackgroundScreen` is a simple screen that takes an image url and a string separated by a comma as an input an displays the image and text in the centre of the screen.
+`ImageBackgroundScreen` is a simple screen that takes an image url and a string separated by a comma as an input an displays the image under the text.
 It will also parse html.
+There is an optional named parameter called
+`imageFit` and it can be set to one of three things:
+`contain` (default) which makes sure the the image won't be cropped or distorted.
+`crop` which will crop the image to ensure it takes up the whole screen.
+`stretch` which will stretch the image to ensure it fits the whole screen.
+
 
 ### SettingsScreen
 `SettingsScreen` takes the settings table from the `configSource` and allows the user to alter the settings. Keep in mind you are responsible for populating the settings and adding functionality.
