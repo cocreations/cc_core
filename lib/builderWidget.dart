@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:cc_core/models/core/builderWidgetController.dart';
 import 'package:cc_core/screens/introScreen/introScreen.dart';
 import 'package:cc_core/utils/parserModule.dart';
 import 'package:flutter/material.dart';
@@ -13,18 +15,30 @@ import 'package:cc_core/models/core/ccAppMenus.dart';
 import 'package:cc_core/models/core/ccMenuItem.dart';
 
 class BuilderWidget extends StatefulWidget {
-  BuilderWidget({this.dataLocation});
+  BuilderWidget({this.controller});
 
-  /// for testing only, DO NOT USE IN PRODUCTION
-  final Map? dataLocation;
+  final BuilderWidgetController? controller;
   @override
   _BuilderWidgetState createState() => _BuilderWidgetState();
 }
 
 class _BuilderWidgetState extends State<BuilderWidget> {
+  StreamSubscription<BuilderPacket>? controller;
+
+  @override
+  void dispose() {
+    if (controller != null) controller!.cancel();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
+    if (widget.controller != null) {
+      controller = widget.controller!.updateStream.stream.listen((event) {
+        _onControllerEvent(event);
+      });
+    }
     Future.delayed(Duration.zero).then((_) async {
       var shownIntro = await CcApp.of(context)!.database.loadSingleEntry("0", "_appData");
 
@@ -43,6 +57,32 @@ class _BuilderWidgetState extends State<BuilderWidget> {
         }
       }
     });
+  }
+
+  void _onControllerEvent(BuilderPacket event) {
+    switch (event.command) {
+      case Command.display:
+        showWidget(event.widget!, event.arg);
+        break;
+      case Command.showIntro:
+        if (CcApp.of(context)!.menus!.intro != null) {
+          if (mounted) {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => IntroScreen(CcApp.of(context)!.menus!.intro!.screen),
+              ),
+            );
+          }
+        }
+        break;
+      case Command.updateAppBar:
+        if (mounted) {
+          setState(() {
+            appBarOverride = event.arg;
+          });
+        }
+        break;
+    }
   }
 
   /// ontap for keeping track of the bottom menu
@@ -80,6 +120,9 @@ class _BuilderWidgetState extends State<BuilderWidget> {
   /// all the menus and stuff
   CcAppMenus? menus;
 
+  /// Overrides the default app bar so it can be changed on the fly
+  String? appBarOverride;
+
   /// duh
   List<BottomNavigationBarItem> bottomMenuItems = [];
 
@@ -87,16 +130,9 @@ class _BuilderWidgetState extends State<BuilderWidget> {
   Widget build(BuildContext context) {
     // getting data
     if (menus == null) {
-      if (widget.dataLocation != null) {
-        // we are in a test so get the test data from somewhere else
-        setState(() {
-          menus = CcAppMenus.createFromJson(widget.dataLocation!["menus"]);
-        });
-      } else {
-        setState(() {
-          menus = CcApp.of(context)!.menus;
-        });
-      }
+      setState(() {
+        menus = CcApp.of(context)!.menus;
+      });
     }
     // data has been got so display it
     if (menus != null) {
@@ -123,6 +159,7 @@ class _BuilderWidgetState extends State<BuilderWidget> {
         child: display,
         bottomNavBar: bottomMenu,
         leftSideMenu: leftSideMenu,
+        appBarOverride: appBarOverride != null ? Text(appBarOverride!) : null,
       );
     }
     return returnWidget;

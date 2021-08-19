@@ -1,3 +1,4 @@
+import 'package:cc_core/models/core/builderWidgetController.dart';
 import 'package:cc_core/models/core/ccAppBuilder.dart';
 import 'package:cc_core/models/core/ccTranslationLayer.dart';
 import 'package:cc_core/utils/parserModule.dart';
@@ -25,6 +26,7 @@ class CcApp extends InheritedWidget {
   final CcDataConnection dataSource;
   final DBCache database;
   final Widget child;
+  final BuilderWidgetController? builderWidgetController;
   final CcAppMenus? menus;
   final CcAppScreen? homeScreen;
   final CcStyler? styler;
@@ -41,6 +43,7 @@ class CcApp extends InheritedWidget {
     required this.configSource,
     required this.database,
     required this.child,
+    this.builderWidgetController,
     this.styler,
     this.menus,
     this.homeScreen,

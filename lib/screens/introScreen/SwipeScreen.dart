@@ -105,6 +105,13 @@ class _SwipeScreenState extends State<SwipeScreen> {
       CcData(CcApp.of(context)!.database).getDBData(args.first, CcApp.of(context)!.dataSource).then((dbData) {
         List vals = List.from(dbData!.values);
         pages = [];
+        print("vals == $vals");
+        vals.sort((a, b) {
+          if (a["dataId"] == null) return 1;
+          if (b["dataId"] == null) return -1;
+          return a["dataId"].compareTo(b["dataId"]);
+        });
+
         for (var val in vals) {
           val = jsonDecode(val["dataJson"]);
           pages.add(

@@ -31,6 +31,7 @@ class CcStyler {
 
   /// A static method that takes image assets and turns them into a CcStyler
   static CcStyler buildWithAssets({
+    bool hasAppBar = true,
     String? fallbackAppBanner = "App",
     Color appBarBackground = Colors.blue,
     String? appBarBanner,
@@ -50,7 +51,7 @@ class CcStyler {
 
     return CcStyler(
       appBarBackground: appBarBackground,
-      appBarBanner: widgets[0],
+      appBarBanner: hasAppBar ? widgets[0] : null,
       backgroundColor: backgroundColor,
       appBarButtonColor: appBarButtonColor,
       primaryColor: primaryColor,
@@ -63,6 +64,7 @@ class CcStyler {
   static Future<CcStyler> buildWithUrls(
     DBCache database,
     BuildContext context, {
+    bool hasAppBar = true,
     String? fallbackAppBanner = "App",
     Color appBarBackground = Colors.blue,
     String? appBarBanner,
@@ -79,7 +81,7 @@ class CcStyler {
       urls.add(appBarBanner);
       fileIds.add(0);
     }
-    List<File?> files = await (CcData(database).getFiles(urls, "style", context) as Future<List<File?>>);
+    List<File?> files = await CcData(database).getFiles(urls, "style", context);
 
     if (files[fileIds.indexOf(0)] != null) {
       widgets.insert(fileIds.indexOf(0), Image.file(files[fileIds.indexOf(0)]!, width: 200));
@@ -89,7 +91,7 @@ class CcStyler {
 
     return CcStyler(
       appBarBackground: appBarBackground,
-      appBarBanner: widgets[fileIds.indexOf(0)],
+      appBarBanner: hasAppBar ? widgets[fileIds.indexOf(0)] : null,
       backgroundColor: backgroundColor,
       appBarButtonColor: appBarButtonColor,
       primaryColor: primaryColor,

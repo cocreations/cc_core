@@ -67,7 +67,7 @@ class _TiledListScreenState extends State<TiledListScreen> {
         image != null
             ? Image.file(
                 image,
-                fit: BoxFit.fitHeight,
+                fit: BoxFit.cover,
                 height: style.imageSize,
                 width: style.imageSize,
               )
@@ -150,7 +150,7 @@ class _TiledListScreenState extends State<TiledListScreen> {
   Future<List> getData() async {
     CcData data = CcData(CcApp.of(context)!.database);
     // grab the data from the new table
-    
+
     Map? dbData = await data.getDBData(widget.tableName!, CcApp.of(context)!.dataSource);
 
     List vals = dbData != null ? List.from(dbData.values) : [];
@@ -169,6 +169,7 @@ class _TiledListScreenState extends State<TiledListScreen> {
 
       // if val["displayAppScreen"] is true, it means we don't need to see the image, so just get the 404 image
       // efficacy needs to be improved here
+
       if ((val["tileImageUrl"] != null && val["tileImageUrl"] != "") && !val["displayAppScreen"]) {
         imageUrls.add(val["tileImageUrl"]);
       } else {
@@ -186,7 +187,6 @@ class _TiledListScreenState extends State<TiledListScreen> {
     if (widget.tableName != null) {
       Future.delayed(Duration.zero).then((_) {
         getData().then((vals) {
-          print("${widget.tableName} = $vals");
           if (mounted) {
             CcData(CcApp.of(context)!.database).getFiles(imageUrls, widget.tableName!, context).then((images) {
               listItems = [];

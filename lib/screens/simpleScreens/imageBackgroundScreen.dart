@@ -53,8 +53,10 @@ class _ImageBackgroundScreenState extends State<ImageBackgroundScreen> {
           children: [
             imageWidget,
             args.length >= 2
-                ? Html(
-                    data: args[1],
+                ? SingleChildScrollView(
+                    child: Html(
+                      data: args[1],
+                    ),
                   )
                 : Container(),
           ],

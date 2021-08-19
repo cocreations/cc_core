@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cc_core/models/core/builderWidgetController.dart';
 import 'package:cc_core/models/core/ccTranslationLayer.dart';
 import 'package:flutter/material.dart';
 import 'package:cc_core/builderWidget.dart';
@@ -33,6 +34,8 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
   Map? styleConfigData;
   CcData? data;
   CcStyler? style;
+
+  BuilderWidgetController? builderWidgetController = BuilderWidgetController();
 
   DrawerType _parseDrawerType(String? string) {
     switch (string) {
@@ -68,7 +71,11 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
         sideDrawerType: styleData["sideDrawerType"] != null ? _parseDrawerType(styleData["sideDrawerType"]) : DrawerType.standard,
       );
     } else {
+      bool shouldShowAppBar = true;
+      if (styleData["appBarBanner"] == "false") shouldShowAppBar = false;
+
       return CcStyler.buildWithAssets(
+        hasAppBar: shouldShowAppBar,
         fallbackAppBanner: widget.appConfig.appName != null ? widget.appConfig.appName : "App",
         appBarBanner: styleData["appBarBanner"] != null ? styleData["appBarBanner"] : null,
         appBarBackground: styleData["appBarBackground"] != null ? Color(int.parse(styleData["appBarBackground"])) : Colors.blue,
@@ -142,8 +149,9 @@ class _CcAppBuilderState extends State<CcAppBuilder> {
             accentColor: style!.accentColor,
           ),
           title: widget.appConfig.appName!,
-          home: BuilderWidget(),
+          home: BuilderWidget(controller: builderWidgetController),
         ),
+        builderWidgetController: builderWidgetController,
         styler: style,
         appId: widget.appConfig.appName!,
         configSource: configSource!,

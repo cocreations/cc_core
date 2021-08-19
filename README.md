@@ -75,9 +75,9 @@ All the tools you need to build an app in 2 minutes.
   Defaults to white.
 
   3. appBarBanner : Url.
-  An image to add to the app bar. If none is supplied, the apps name will be used instead.
+  An image to add to the app bar. If set to "false", the app won't show an app bar, but if it is empty or omitted completely, the apps name will be used instead.
 
-  4. appBarButtonColor : String int colour value.
+  1. appBarButtonColor : String int colour value.
   Sets the colour of the side menu button.
   Defaults to white.
 
