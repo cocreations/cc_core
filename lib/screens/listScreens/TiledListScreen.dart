@@ -68,12 +68,12 @@ class _TiledListScreenState extends State<TiledListScreen> {
             ? Image.file(
                 image,
                 fit: BoxFit.cover,
-                height: style.imageSize,
-                width: style.imageSize,
+                height: (MediaQuery.of(context).size.width / 2) - 2,
+                width: (MediaQuery.of(context).size.width / 2) - 2,
               )
             : Container(
-                height: style.imageSize,
-                width: style.imageSize,
+                height: (MediaQuery.of(context).size.width / 2) - 2,
+                width: (MediaQuery.of(context).size.width / 2) - 2,
               ),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
@@ -139,9 +139,9 @@ class _TiledListScreenState extends State<TiledListScreen> {
       ),
       margin: EdgeInsets.all(3),
       child: Container(
-        width: style.imageSize,
+        width: (MediaQuery.of(context).size.width / 2) - 2,
         color: Colors.grey[100],
-        height: style.imageSize,
+        height: (MediaQuery.of(context).size.width / 2) - 2,
         child: tileContent(name, appScreen, appScreenParam, image, style, showAppScreenOnCard),
       ),
     );
@@ -197,7 +197,7 @@ class _TiledListScreenState extends State<TiledListScreen> {
               if (mounted) {
                 setState(() {
                   display = GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (MediaQuery.of(context).size.width / listItemStyle.first.imageSize).floor(), crossAxisSpacing: 2),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 2),
                     itemCount: listItems.length,
                     itemBuilder: (_, i) {
                       return listItems[i];

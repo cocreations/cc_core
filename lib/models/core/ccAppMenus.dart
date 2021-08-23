@@ -54,6 +54,15 @@ class CcAppMenus {
       json["leftSide"].forEach((item) {
         sideMenu.add(CcMenuItem.createFromJson(item));
       });
+      sideMenu.sort((a, b) {
+        int? intA = int.tryParse(a.id);
+        if (intA == null) return -1;
+
+        int? intB = int.tryParse(b.id);
+        if (intB == null) return 1;
+
+        return intA.compareTo(intB);
+      });
     }
     if (json["homeScreen"] != null && json["homeScreen"].isNotEmpty) {
       homeScreen = CcMenuItem.createFromJson(json["homeScreen"][0]);
