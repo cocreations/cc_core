@@ -16,15 +16,40 @@ class TiledListScreen extends StatefulWidget {
   _TiledListScreenState createState() => _TiledListScreenState();
 }
 
-class _TiledListScreenState extends State<TiledListScreen> {
-  Widget display = Center(
-    child: CircularProgressIndicator(),
-  ); // I think I need to replace these with a new animation
-  // nah, you're fine. I think that works
-
+class _TiledListScreenState extends State<TiledListScreen> with WidgetsBindingObserver {
   List<Widget> listItems = [];
   List<String?> imageUrls = [];
+  List<File?> images = [];
+  List tileData = [];
   List<TileStyle> listItemStyle = [];
+
+  Orientation get orientation => WidgetsBinding.instance!.window.physicalSize.aspectRatio > 1 ? Orientation.landscape : Orientation.portrait;
+
+  @override
+  void didChangeMetrics() {
+    print("metrics changed");
+    buildTiles();
+  }
+
+  void buildTiles() {
+    listItems = [];
+    for (var i = 0; i < tileData.length; i++) {
+      listItems.add(
+        tile(
+          tileData[i]["name"],
+          tileData[i]["appScreen"],
+          tileData[i]["appScreenParam"],
+          images[i],
+          listItemStyle[i],
+          tileData[i]["displayAppScreen"],
+        ),
+      );
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   void _openPage(NavigatorState navigator, Widget widget, String? title) {
     navigator.push(
@@ -49,7 +74,7 @@ class _TiledListScreenState extends State<TiledListScreen> {
     );
   }
 
-  Widget tileContent(
+  Widget tile(
     String? name,
     String? appScreen,
     String? appScreenParam,
@@ -60,38 +85,45 @@ class _TiledListScreenState extends State<TiledListScreen> {
     if (showAppScreenOnCard) {
       return WidgetParser(appScreen, appScreenParam);
     }
+
+    // This is all super complicated and messy.
+    // But basically this is here so the image sizes will update when the device goes into landscape mode.
+    // MediaQuery.of(context).size is based on the device size when in portrait mode.
+    final double width = orientation == Orientation.portrait ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height;
+
     List<Widget> stack = [];
-    stack.add(Stack(
-      alignment: style.namePosition,
-      children: <Widget>[
-        image != null
-            ? Image.file(
-                image,
-                fit: BoxFit.cover,
-                height: (MediaQuery.of(context).size.width / 2) - 2,
-                width: (MediaQuery.of(context).size.width / 2) - 2,
-              )
-            : Container(
-                height: (MediaQuery.of(context).size.width / 2) - 2,
-                width: (MediaQuery.of(context).size.width / 2) - 2,
+    stack.add(Container(
+      width: (width / 2) - 2,
+      height: (width / 2) - 2,
+      child: Stack(
+        alignment: style.namePosition,
+        children: <Widget>[
+          image != null
+              ? Image.file(
+                  image,
+                  width: (width / 2) - 2,
+                  height: (width / 2) - 2,
+                  fit: BoxFit.cover,
+                )
+              : Container(),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            decoration: BoxDecoration(
+              color: style.nameBackground,
+              borderRadius: BorderRadius.all(Radius.circular(3)),
+            ),
+            child: Text(
+              name != null ? name : "",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: "Roboto",
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          decoration: BoxDecoration(
-            color: style.nameBackground,
-            borderRadius: BorderRadius.all(Radius.circular(3)),
-          ),
-          child: Text(
-            name != null ? name : "",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: "Roboto",
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     ));
     if (appScreen != null) {
       stack.add(Material(
@@ -116,17 +148,6 @@ class _TiledListScreenState extends State<TiledListScreen> {
         ),
       ));
     }
-    return Stack(children: stack);
-  }
-
-  Widget newTile(
-    String? name,
-    String? appScreen,
-    String? appScreenParam,
-    File? image,
-    TileStyle style,
-    bool showAppScreenOnCard,
-  ) {
     return Card(
       elevation: style.elevation,
       clipBehavior: Clip.antiAlias,
@@ -139,10 +160,10 @@ class _TiledListScreenState extends State<TiledListScreen> {
       ),
       margin: EdgeInsets.all(3),
       child: Container(
-        width: (MediaQuery.of(context).size.width / 2) - 2,
+        width: (width / 2) - 2,
+        height: (width / 2) - 2,
         color: Colors.grey[100],
-        height: (MediaQuery.of(context).size.width / 2) - 2,
-        child: tileContent(name, appScreen, appScreenParam, image, style, showAppScreenOnCard),
+        child: Stack(children: stack),
       ),
     );
   }
@@ -183,33 +204,27 @@ class _TiledListScreenState extends State<TiledListScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance!.addObserver(this);
 
     if (widget.tableName != null) {
       Future.delayed(Duration.zero).then((_) {
         getData().then((vals) {
+          tileData = vals;
           if (mounted) {
-            CcData(CcApp.of(context)!.database).getFiles(imageUrls, widget.tableName!, context).then((images) {
-              listItems = [];
-              for (var i = 0; i < vals.length; i++) {
-                listItems.add(newTile(vals[i]["name"], vals[i]["appScreen"], vals[i]["appScreenParam"], images[i], listItemStyle[i], vals[i]["displayAppScreen"]));
-              }
-
-              if (mounted) {
-                setState(() {
-                  display = GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 2),
-                    itemCount: listItems.length,
-                    itemBuilder: (_, i) {
-                      return listItems[i];
-                    },
-                  );
-                });
-              }
+            CcData(CcApp.of(context)!.database).getFiles(imageUrls, widget.tableName!, context).then((imageFiles) {
+              images = imageFiles;
+              buildTiles();
             });
           }
         });
       });
     }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -222,6 +237,15 @@ class _TiledListScreenState extends State<TiledListScreen> {
       );
     }
 
-    return display;
+    if (listItems.isEmpty) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    return GridView(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 2),
+      children: listItems,
+    );
   }
 }
