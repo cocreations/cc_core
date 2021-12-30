@@ -1,6 +1,6 @@
 # cc_core
 
-All the tools you need to build an app in 2 minutes.
+All the tools you need to build an app in 2 minutes..
 
 ## Getting Started
 
